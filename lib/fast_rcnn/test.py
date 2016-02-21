@@ -306,7 +306,7 @@ def test_net(net, imdb):
             im2 = im2[:, :, ::-1]
             ims[:,:,0:3] = im1
             ims[:,:,3:6] = im2
-            ims[:,:,6:7] = im3
+            ims[:,:,6] = im3
 
             im.append(ims)
         
