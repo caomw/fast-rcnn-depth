@@ -133,19 +133,23 @@ def _get_image_blob(roidb, scale_inds, data_i):
     for i in xrange(num_images):
         imname1 = roidb[i]['image'][data_i]
         imname2= imname1 + '_norm.png'
+        imname3= imname1 + '_depth.png'
         im1= cv2.imread(imname1)
-        im2= cv2.imread(imname2) 
+        im2= cv2.imread(imname2)
+        im3 = cv2.imread(imname3, cv2.CV_LOAD_IMAGE_GRAYSCALE)  
         if roidb[i]['flipped']:
             im1 = im1[:, ::-1, :]
             im2 = im2[:, ::-1, :]
+            im3 = im3[:, ::-1]
             im2[:,:,2] = 255 - im2[:,:,2]
 
-        im = np.zeros((im1.shape[0], im1.shape[1], 6))
+        im = np.zeros((im1.shape[0], im1.shape[1], 7))
         im = im.astype('uint8')
         im1 = im1[:, :, ::-1]
         im2 = im2[:, :, ::-1]
         im[:,:,0:3] = im1
         im[:,:,3:6] = im2
+        im[:,:,6:7] = im3
 
 
 

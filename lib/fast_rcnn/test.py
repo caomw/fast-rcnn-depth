@@ -296,14 +296,17 @@ def test_net(net, imdb):
         image_paths = imdb.image_path_at(i); im = [];
         for image_path in image_paths:
             image_path2 = image_path + '_norm.png'
+            image_path3 = image_path + '_depth.png'
             im1 = cv2.imread(image_path)
             im2 = cv2.imread(image_path2)
-            ims = np.zeros((im1.shape[0], im1.shape[1], 6))
+            im3 = cv2.imread(image_path3 , cv2.CV_LOAD_IMAGE_GRAYSCALE)
+            ims = np.zeros((im1.shape[0], im1.shape[1], 7))
             # TODO: to test on lua pre-trained model use:
             im1 = im1[:, :, ::-1]
             im2 = im2[:, :, ::-1]
             ims[:,:,0:3] = im1
             ims[:,:,3:6] = im2
+            ims[:,:,6:7] = im3
 
             im.append(ims)
         
