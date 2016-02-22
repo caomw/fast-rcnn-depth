@@ -1,4 +1,4 @@
-EXP_DIR: pre_gan2
+EXP_DIR: pre_gan2_ori
 TRAIN:
   SCALES: !!python/tuple [688]
   MAX_SIZE: 2000
