@@ -1,0 +1,1467 @@
+added /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/caffe-fast-rcnn/python
+added /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/lib
+added /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/python_utils
+added /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/.
+Vendor:  Continuum Analytics, Inc.
+Package: mkl
+Message: trial mode expires in 26 days
+Vendor:  Continuum Analytics, Inc.
+Package: mkl
+Message: trial mode expires in 26 days
+Called with args:
+Namespace(cfg_file='scripts/pre_gan_scratch2/config.prototxt', gpu_id=3, imdb_name='nyud2_image_norm_2015_trainval', max_iters=100000, pretrained_model=None, randomize=False, solver='scripts/pre_gan_scratch2/solver.prototxt')
+Using config:
+{'DEDUP_BOXES': 0.0625,
+ 'EPS': 1e-14,
+ 'EXP_DIR': 'pre_gan2',
+ 'PIXEL_MEANS': array([[[ 102.9801,  115.9465,  122.7717]]]),
+ 'RNG_SEED': 3,
+ 'ROOT_DIR': '/nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth',
+ 'TEST': {'BBOX_REG': True,
+          'DET_SALT': '',
+          'EVAL_SALT': '',
+          'MAX_PER_IMAGE': 100,
+          'MAX_PER_SET_F': 40,
+          'MAX_SIZE': 2000,
+          'NMS': 0.3,
+          'SCALES': [688],
+          'SVM': False},
+ 'TRAIN': {'BATCH_SIZE': 128,
+           'BBOX_PRED_PARAM_NAMES': ['da_bbox_pred'],
+           'BBOX_REG': True,
+           'BBOX_THRESH': 0.5,
+           'BG_THRESH_HI': 0.5,
+           'BG_THRESH_LO': 0.0,
+           'FG_FRACTION': 0.25,
+           'FG_THRESH': 0.5,
+           'IMS_PER_BATCH': 2,
+           'MAX_SIZE': 2000,
+           'SCALES': [688],
+           'SNAPSHOT_INFIX': '',
+           'SNAPSHOT_ITERS': 10000,
+           'USE_FLIPPED': True,
+           'USE_PREFETCH': False}}
+Loaded dataset `nyud2_image_norm_2015_trainval` for training
+Appending horizontally-flipped training examples...
+nyud2_image_norm_2015_trainval ss roidb loaded from /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/data/cache/nyud2_image_norm_2015_trainval_mcg_roidb.pkl
+done
+Preparing training data...
+done
+Output will be saved to `/nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/output/pre_gan2/nyud2_image_norm_2015_trainval`
+Computing bounding-box regression targets...
+done
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I0222 02:55:55.890208  4135 solver.cpp:32] Initializing solver from parameters: 
+train_net: "/nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/scripts/pre_gan_scratch2/train.prototxt"
+base_lr: 0.01
+display: 20
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 30000
+snapshot: 0
+snapshot_prefix: "/nfs.yoda/xiaolonw/fast_rcnn/models_depth/pre_gan_scratch2/fast_rcnn"
+average_loss: 100
+I0222 02:55:55.890256  4135 solver.cpp:61] Creating training net from train_net file: /nfs.yoda/xiaolonw/fast_rcnn/fast-rcnn-depth/scripts/pre_gan_scratch2/train.prototxt
+I0222 02:55:55.891775  4135 net.cpp:42] Initializing net from parameters: 
+name: "CaffeNet"
+state {
+  phase: TRAIN
+}
+layer {
+  name: "data"
+  type: "Python"
+  top: "data"
+  top: "rois"
+  top: "labels"
+  top: "bbox_targets"
+  top: "bbox_loss_weights"
+  python_param {
+    module: "roi_data_layer.layer_pi"
+    layer: "RoIDataLayerPi"
+    param_str: "--num_classes 20 --num_data 1"
+  }
+}
+layer {
+  name: "da_conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "da_conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "da_relu1"
+  type: "ReLU"
+  bottom: "da_conv1"
+  top: "da_conv1"
+  relu_param {
+    negative_slope: 0.2
+  }
+}
+layer {
+  name: "da_pool1"
+  type: "Pooling"
+  bottom: "da_conv1"
+  top: "da_pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+    pad: 0
+  }
+}
+layer {
+  name: "da_conv2"
+  type: "Convolution"
+  bottom: "da_pool1"
+  top: "da_conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "da_relu2"
+  type: "ReLU"
+  bottom: "da_conv2"
+  top: "da_conv2"
+  relu_param {
+    negative_slope: 0.2
+  }
+}
+layer {
+  name: "da_pool2"
+  type: "Pooling"
+  bottom: "da_conv2"
+  top: "da_pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+    pad: 0
+  }
+}
+layer {
+  name: "da_conv3"
+  type: "Convolution"
+  bottom: "da_pool2"
+  top: "da_conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "da_relu3"
+  type: "ReLU"
+  bottom: "da_conv3"
+  top: "da_conv3"
+  relu_param {
+    negative_slope: 0.2
+  }
+}
+layer {
+  name: "da_conv4"
+  type: "Convolution"
+  bottom: "da_conv3"
+  top: "da_conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "da_relu4"
+  type: "ReLU"
+  bottom: "da_conv4"
+  top: "da_conv4"
+  relu_param {
+    negative_slope: 0.2
+  }
+}
+layer {
+  name: "da_conv5"
+  type: "Convolution"
+  bottom: "da_conv4"
+  top: "da_conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "da_relu5"
+  type: "ReLU"
+  bottom: "da_conv5"
+  top: "da_conv5"
+  relu_param {
+    negative_slope: 0.2
+  }
+}
+layer {
+  name: "da_roi_pool5"
+  type: "ROIPooling"
+  bottom: "da_conv5"
+  bottom: "rois"
+  top: "da_pool5"
+  roi_pooling_param {
+    pooled_h: 6
+    pooled_w: 6
+    spatial_scale: 0.0625
+  }
+}
+layer {
+  name: "da_fc6"
+  type: "InnerProduct"
+  bottom: "da_pool5"
+  top: "da_fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "da_relu6"
+  type: "ReLU"
+  bottom: "da_fc6"
+  top: "da_fc6"
+}
+layer {
+  name: "da_drop6"
+  type: "Dropout"
+  bottom: "da_fc6"
+  top: "da_fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "da_fc7"
+  type: "InnerProduct"
+  bottom: "da_fc6"
+  top: "da_fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "da_relu7"
+  type: "ReLU"
+  bottom: "da_fc7"
+  top: "da_fc7"
+}
+layer {
+  name: "da_drop7"
+  type: "Dropout"
+  bottom: "da_fc7"
+  top: "da_fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "da_cls_score"
+  type: "InnerProduct"
+  bottom: "da_fc7"
+  top: "cls_score_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 20
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "da_bbox_pred"
+  type: "InnerProduct"
+  bottom: "da_fc7"
+  top: "bbox_pred_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 80
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "da_loss_cls"
+  type: "SoftmaxWithLoss"
+  bottom: "cls_score_1"
+  bottom: "labels"
+  top: "da_loss_cls"
+  loss_weight: 0.5
+}
+layer {
+  name: "da_loss_bbox"
+  type: "SmoothL1Loss"
+  bottom: "bbox_pred_1"
+  bottom: "bbox_targets"
+  bottom: "bbox_loss_weights"
+  top: "da_loss_bbox"
+  loss_weight: 0.5
+}
+I0222 02:55:55.891978  4135 layer_factory.hpp:74] Creating layer data
+I0222 02:55:55.894544  4135 net.cpp:84] Creating Layer data
+I0222 02:55:55.894568  4135 net.cpp:338] data -> data
+I0222 02:55:55.894592  4135 net.cpp:338] data -> rois
+I0222 02:55:55.894608  4135 net.cpp:338] data -> labels
+I0222 02:55:55.894624  4135 net.cpp:338] data -> bbox_targets
+I0222 02:55:55.894637  4135 net.cpp:338] data -> bbox_loss_weights
+I0222 02:55:55.894651  4135 net.cpp:113] Setting up data
+I0222 02:55:55.895812  4135 net.cpp:120] Top shape: 1 7 100 100 (70000)
+I0222 02:55:55.895830  4135 net.cpp:120] Top shape: 1 5 (5)
+I0222 02:55:55.895839  4135 net.cpp:120] Top shape: 1 (1)
+I0222 02:55:55.895848  4135 net.cpp:120] Top shape: 1 80 (80)
+I0222 02:55:55.895860  4135 net.cpp:120] Top shape: 1 80 (80)
+I0222 02:55:55.895871  4135 layer_factory.hpp:74] Creating layer da_conv1
+I0222 02:55:55.895895  4135 net.cpp:84] Creating Layer da_conv1
+I0222 02:55:55.895903  4135 net.cpp:380] da_conv1 <- data
+I0222 02:55:55.895920  4135 net.cpp:338] da_conv1 -> da_conv1
+I0222 02:55:55.895934  4135 net.cpp:113] Setting up da_conv1
+I0222 02:55:55.896214  4135 net.cpp:120] Top shape: 1 64 50 50 (160000)
+I0222 02:55:55.896241  4135 layer_factory.hpp:74] Creating layer da_relu1
+I0222 02:55:55.896256  4135 net.cpp:84] Creating Layer da_relu1
+I0222 02:55:55.896265  4135 net.cpp:380] da_relu1 <- da_conv1
+I0222 02:55:55.896275  4135 net.cpp:327] da_relu1 -> da_conv1 (in-place)
+I0222 02:55:55.896286  4135 net.cpp:113] Setting up da_relu1
+I0222 02:55:55.896301  4135 net.cpp:120] Top shape: 1 64 50 50 (160000)
+I0222 02:55:55.896306  4135 layer_factory.hpp:74] Creating layer da_pool1
+I0222 02:55:55.896317  4135 net.cpp:84] Creating Layer da_pool1
+I0222 02:55:55.896325  4135 net.cpp:380] da_pool1 <- da_conv1
+I0222 02:55:55.896337  4135 net.cpp:338] da_pool1 -> da_pool1
+I0222 02:55:55.896348  4135 net.cpp:113] Setting up da_pool1
+I0222 02:55:55.896370  4135 net.cpp:120] Top shape: 1 64 25 25 (40000)
+I0222 02:55:55.896381  4135 layer_factory.hpp:74] Creating layer da_conv2
+I0222 02:55:55.896395  4135 net.cpp:84] Creating Layer da_conv2
+I0222 02:55:55.896404  4135 net.cpp:380] da_conv2 <- da_pool1
+I0222 02:55:55.896416  4135 net.cpp:338] da_conv2 -> da_conv2
+I0222 02:55:55.896428  4135 net.cpp:113] Setting up da_conv2
+I0222 02:55:55.901168  4135 net.cpp:120] Top shape: 1 128 13 13 (21632)
+I0222 02:55:55.901197  4135 layer_factory.hpp:74] Creating layer da_relu2
+I0222 02:55:55.901211  4135 net.cpp:84] Creating Layer da_relu2
+I0222 02:55:55.901221  4135 net.cpp:380] da_relu2 <- da_conv2
+I0222 02:55:55.901234  4135 net.cpp:327] da_relu2 -> da_conv2 (in-place)
+I0222 02:55:55.901252  4135 net.cpp:113] Setting up da_relu2
+I0222 02:55:55.901263  4135 net.cpp:120] Top shape: 1 128 13 13 (21632)
+I0222 02:55:55.901273  4135 layer_factory.hpp:74] Creating layer da_pool2
+I0222 02:55:55.901286  4135 net.cpp:84] Creating Layer da_pool2
+I0222 02:55:55.901295  4135 net.cpp:380] da_pool2 <- da_conv2
+I0222 02:55:55.901307  4135 net.cpp:338] da_pool2 -> da_pool2
+I0222 02:55:55.901322  4135 net.cpp:113] Setting up da_pool2
+I0222 02:55:55.901340  4135 net.cpp:120] Top shape: 1 128 6 6 (4608)
+I0222 02:55:55.901348  4135 layer_factory.hpp:74] Creating layer da_conv3
+I0222 02:55:55.901365  4135 net.cpp:84] Creating Layer da_conv3
+I0222 02:55:55.901372  4135 net.cpp:380] da_conv3 <- da_pool2
+I0222 02:55:55.901387  4135 net.cpp:338] da_conv3 -> da_conv3
+I0222 02:55:55.901401  4135 net.cpp:113] Setting up da_conv3
+I0222 02:55:55.907897  4135 net.cpp:120] Top shape: 1 256 6 6 (9216)
+I0222 02:55:55.907929  4135 layer_factory.hpp:74] Creating layer da_relu3
+I0222 02:55:55.907946  4135 net.cpp:84] Creating Layer da_relu3
+I0222 02:55:55.907955  4135 net.cpp:380] da_relu3 <- da_conv3
+I0222 02:55:55.907969  4135 net.cpp:327] da_relu3 -> da_conv3 (in-place)
+I0222 02:55:55.907984  4135 net.cpp:113] Setting up da_relu3
+I0222 02:55:55.907995  4135 net.cpp:120] Top shape: 1 256 6 6 (9216)
+I0222 02:55:55.908004  4135 layer_factory.hpp:74] Creating layer da_conv4
+I0222 02:55:55.908020  4135 net.cpp:84] Creating Layer da_conv4
+I0222 02:55:55.908030  4135 net.cpp:380] da_conv4 <- da_conv3
+I0222 02:55:55.908044  4135 net.cpp:338] da_conv4 -> da_conv4
+I0222 02:55:55.908059  4135 net.cpp:113] Setting up da_conv4
+I0222 02:55:55.933046  4135 net.cpp:120] Top shape: 1 512 6 6 (18432)
+I0222 02:55:55.933104  4135 layer_factory.hpp:74] Creating layer da_relu4
+I0222 02:55:55.933128  4135 net.cpp:84] Creating Layer da_relu4
+I0222 02:55:55.933138  4135 net.cpp:380] da_relu4 <- da_conv4
+I0222 02:55:55.933156  4135 net.cpp:327] da_relu4 -> da_conv4 (in-place)
+I0222 02:55:55.933171  4135 net.cpp:113] Setting up da_relu4
+I0222 02:55:55.933184  4135 net.cpp:120] Top shape: 1 512 6 6 (18432)
+I0222 02:55:55.933197  4135 layer_factory.hpp:74] Creating layer da_conv5
+I0222 02:55:55.933213  4135 net.cpp:84] Creating Layer da_conv5
+I0222 02:55:55.933220  4135 net.cpp:380] da_conv5 <- da_conv4
+I0222 02:55:55.933233  4135 net.cpp:338] da_conv5 -> da_conv5
+I0222 02:55:55.933249  4135 net.cpp:113] Setting up da_conv5
+I0222 02:55:55.945538  4135 net.cpp:120] Top shape: 1 128 6 6 (4608)
+I0222 02:55:55.945564  4135 layer_factory.hpp:74] Creating layer da_relu5
+I0222 02:55:55.945580  4135 net.cpp:84] Creating Layer da_relu5
+I0222 02:55:55.945588  4135 net.cpp:380] da_relu5 <- da_conv5
+I0222 02:55:55.945600  4135 net.cpp:327] da_relu5 -> da_conv5 (in-place)
+I0222 02:55:55.945613  4135 net.cpp:113] Setting up da_relu5
+I0222 02:55:55.945626  4135 net.cpp:120] Top shape: 1 128 6 6 (4608)
+I0222 02:55:55.945634  4135 layer_factory.hpp:74] Creating layer da_roi_pool5
+I0222 02:55:55.945652  4135 net.cpp:84] Creating Layer da_roi_pool5
+I0222 02:55:55.945659  4135 net.cpp:380] da_roi_pool5 <- da_conv5
+I0222 02:55:55.945669  4135 net.cpp:380] da_roi_pool5 <- rois
+I0222 02:55:55.945683  4135 net.cpp:338] da_roi_pool5 -> da_pool5
+I0222 02:55:55.945696  4135 net.cpp:113] Setting up da_roi_pool5
+I0222 02:55:55.945706  4135 roi_pooling_layer.cpp:30] Spatial scale: 0.0625
+I0222 02:55:55.945731  4135 net.cpp:120] Top shape: 1 128 6 6 (4608)
+I0222 02:55:55.945739  4135 layer_factory.hpp:74] Creating layer da_fc6
+I0222 02:55:55.945756  4135 net.cpp:84] Creating Layer da_fc6
+I0222 02:55:55.945765  4135 net.cpp:380] da_fc6 <- da_pool5
+I0222 02:55:55.945780  4135 net.cpp:338] da_fc6 -> da_fc6
+I0222 02:55:55.945793  4135 net.cpp:113] Setting up da_fc6
+I0222 02:55:56.366791  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.366827  4135 layer_factory.hpp:74] Creating layer da_relu6
+I0222 02:55:56.366845  4135 net.cpp:84] Creating Layer da_relu6
+I0222 02:55:56.366854  4135 net.cpp:380] da_relu6 <- da_fc6
+I0222 02:55:56.366869  4135 net.cpp:327] da_relu6 -> da_fc6 (in-place)
+I0222 02:55:56.366885  4135 net.cpp:113] Setting up da_relu6
+I0222 02:55:56.366897  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.366906  4135 layer_factory.hpp:74] Creating layer da_drop6
+I0222 02:55:56.366930  4135 net.cpp:84] Creating Layer da_drop6
+I0222 02:55:56.366937  4135 net.cpp:380] da_drop6 <- da_fc6
+I0222 02:55:56.366948  4135 net.cpp:327] da_drop6 -> da_fc6 (in-place)
+I0222 02:55:56.366961  4135 net.cpp:113] Setting up da_drop6
+I0222 02:55:56.366978  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.366987  4135 layer_factory.hpp:74] Creating layer da_fc7
+I0222 02:55:56.367003  4135 net.cpp:84] Creating Layer da_fc7
+I0222 02:55:56.367010  4135 net.cpp:380] da_fc7 <- da_fc6
+I0222 02:55:56.367024  4135 net.cpp:338] da_fc7 -> da_fc7
+I0222 02:55:56.367039  4135 net.cpp:113] Setting up da_fc7
+I0222 02:55:56.714962  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.714998  4135 layer_factory.hpp:74] Creating layer da_relu7
+I0222 02:55:56.715015  4135 net.cpp:84] Creating Layer da_relu7
+I0222 02:55:56.715023  4135 net.cpp:380] da_relu7 <- da_fc7
+I0222 02:55:56.715040  4135 net.cpp:327] da_relu7 -> da_fc7 (in-place)
+I0222 02:55:56.715055  4135 net.cpp:113] Setting up da_relu7
+I0222 02:55:56.715067  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.715080  4135 layer_factory.hpp:74] Creating layer da_drop7
+I0222 02:55:56.715095  4135 net.cpp:84] Creating Layer da_drop7
+I0222 02:55:56.715102  4135 net.cpp:380] da_drop7 <- da_fc7
+I0222 02:55:56.715114  4135 net.cpp:327] da_drop7 -> da_fc7 (in-place)
+I0222 02:55:56.715127  4135 net.cpp:113] Setting up da_drop7
+I0222 02:55:56.715142  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.715152  4135 layer_factory.hpp:74] Creating layer da_fc7_da_drop7_0_split
+I0222 02:55:56.715167  4135 net.cpp:84] Creating Layer da_fc7_da_drop7_0_split
+I0222 02:55:56.715173  4135 net.cpp:380] da_fc7_da_drop7_0_split <- da_fc7
+I0222 02:55:56.715184  4135 net.cpp:338] da_fc7_da_drop7_0_split -> da_fc7_da_drop7_0_split_0
+I0222 02:55:56.715203  4135 net.cpp:338] da_fc7_da_drop7_0_split -> da_fc7_da_drop7_0_split_1
+I0222 02:55:56.715219  4135 net.cpp:113] Setting up da_fc7_da_drop7_0_split
+I0222 02:55:56.715231  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.715240  4135 net.cpp:120] Top shape: 1 4096 (4096)
+I0222 02:55:56.715247  4135 layer_factory.hpp:74] Creating layer da_cls_score
+I0222 02:55:56.715260  4135 net.cpp:84] Creating Layer da_cls_score
+I0222 02:55:56.715266  4135 net.cpp:380] da_cls_score <- da_fc7_da_drop7_0_split_0
+I0222 02:55:56.715277  4135 net.cpp:338] da_cls_score -> cls_score_1
+I0222 02:55:56.715289  4135 net.cpp:113] Setting up da_cls_score
+I0222 02:55:56.717300  4135 net.cpp:120] Top shape: 1 20 (20)
+I0222 02:55:56.717320  4135 layer_factory.hpp:74] Creating layer da_bbox_pred
+I0222 02:55:56.717336  4135 net.cpp:84] Creating Layer da_bbox_pred
+I0222 02:55:56.717344  4135 net.cpp:380] da_bbox_pred <- da_fc7_da_drop7_0_split_1
+I0222 02:55:56.717357  4135 net.cpp:338] da_bbox_pred -> bbox_pred_1
+I0222 02:55:56.717370  4135 net.cpp:113] Setting up da_bbox_pred
+I0222 02:55:56.724359  4135 net.cpp:120] Top shape: 1 80 (80)
+I0222 02:55:56.724391  4135 layer_factory.hpp:74] Creating layer da_loss_cls
+I0222 02:55:56.724414  4135 net.cpp:84] Creating Layer da_loss_cls
+I0222 02:55:56.724423  4135 net.cpp:380] da_loss_cls <- cls_score_1
+I0222 02:55:56.724436  4135 net.cpp:380] da_loss_cls <- labels
+I0222 02:55:56.724449  4135 net.cpp:338] da_loss_cls -> da_loss_cls
+I0222 02:55:56.724465  4135 net.cpp:113] Setting up da_loss_cls
+I0222 02:55:56.724477  4135 layer_factory.hpp:74] Creating layer da_loss_cls
+I0222 02:55:56.724503  4135 net.cpp:120] Top shape: (1)
+I0222 02:55:56.724509  4135 net.cpp:122]     with loss weight 0.5
+I0222 02:55:56.724527  4135 layer_factory.hpp:74] Creating layer da_loss_bbox
+I0222 02:55:56.724544  4135 net.cpp:84] Creating Layer da_loss_bbox
+I0222 02:55:56.724551  4135 net.cpp:380] da_loss_bbox <- bbox_pred_1
+I0222 02:55:56.724561  4135 net.cpp:380] da_loss_bbox <- bbox_targets
+I0222 02:55:56.724571  4135 net.cpp:380] da_loss_bbox <- bbox_loss_weights
+I0222 02:55:56.724584  4135 net.cpp:338] da_loss_bbox -> da_loss_bbox
+I0222 02:55:56.724596  4135 net.cpp:113] Setting up da_loss_bbox
+I0222 02:55:56.724612  4135 net.cpp:120] Top shape: (1)
+I0222 02:55:56.724619  4135 net.cpp:122]     with loss weight 0.5
+I0222 02:55:56.724632  4135 net.cpp:167] da_loss_bbox needs backward computation.
+I0222 02:55:56.724642  4135 net.cpp:167] da_loss_cls needs backward computation.
+I0222 02:55:56.724650  4135 net.cpp:167] da_bbox_pred needs backward computation.
+I0222 02:55:56.724659  4135 net.cpp:167] da_cls_score needs backward computation.
+I0222 02:55:56.724668  4135 net.cpp:167] da_fc7_da_drop7_0_split needs backward computation.
+I0222 02:55:56.724678  4135 net.cpp:167] da_drop7 needs backward computation.
+I0222 02:55:56.724685  4135 net.cpp:167] da_relu7 needs backward computation.
+I0222 02:55:56.724694  4135 net.cpp:167] da_fc7 needs backward computation.
+I0222 02:55:56.724701  4135 net.cpp:167] da_drop6 needs backward computation.
+I0222 02:55:56.724709  4135 net.cpp:167] da_relu6 needs backward computation.
+I0222 02:55:56.724717  4135 net.cpp:167] da_fc6 needs backward computation.
+I0222 02:55:56.724725  4135 net.cpp:167] da_roi_pool5 needs backward computation.
+I0222 02:55:56.724731  4135 net.cpp:167] da_relu5 needs backward computation.
+I0222 02:55:56.724738  4135 net.cpp:167] da_conv5 needs backward computation.
+I0222 02:55:56.724747  4135 net.cpp:167] da_relu4 needs backward computation.
+I0222 02:55:56.724756  4135 net.cpp:167] da_conv4 needs backward computation.
+I0222 02:55:56.724763  4135 net.cpp:167] da_relu3 needs backward computation.
+I0222 02:55:56.724771  4135 net.cpp:167] da_conv3 needs backward computation.
+I0222 02:55:56.724779  4135 net.cpp:167] da_pool2 needs backward computation.
+I0222 02:55:56.724787  4135 net.cpp:167] da_relu2 needs backward computation.
+I0222 02:55:56.724795  4135 net.cpp:167] da_conv2 needs backward computation.
+I0222 02:55:56.724804  4135 net.cpp:167] da_pool1 needs backward computation.
+I0222 02:55:56.724813  4135 net.cpp:167] da_relu1 needs backward computation.
+I0222 02:55:56.724822  4135 net.cpp:167] da_conv1 needs backward computation.
+I0222 02:55:56.724830  4135 net.cpp:169] data does not need backward computation.
+I0222 02:55:56.724838  4135 net.cpp:205] This network produces output da_loss_bbox
+I0222 02:55:56.724848  4135 net.cpp:205] This network produces output da_loss_cls
+I0222 02:55:56.724876  4135 net.cpp:447] Collecting Learning Rate and Weight Decay.
+I0222 02:55:56.724891  4135 net.cpp:217] Network initialization done.
+I0222 02:55:56.724898  4135 net.cpp:218] Memory required for data: 2320112
+I0222 02:55:56.725009  4135 solver.cpp:42] Solver scaffolding done.
+Solving...
+I0222 02:55:57.513834  4135 solver.cpp:189] Iteration 0, loss = 1.57566
+I0222 02:55:57.513885  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.396291 (* 0.5 = 0.198146 loss)
+I0222 02:55:57.513900  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 2.75502 (* 0.5 = 1.37751 loss)
+I0222 02:55:57.513914  4135 solver.cpp:464] Iteration 0, lr = 0.01
+I0222 02:56:06.375661  4135 solver.cpp:189] Iteration 20, loss = 0.769518
+I0222 02:56:06.375705  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.425398 (* 0.5 = 0.212699 loss)
+I0222 02:56:06.375720  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.11364 (* 0.5 = 0.55682 loss)
+I0222 02:56:06.375730  4135 solver.cpp:464] Iteration 20, lr = 0.01
+I0222 02:56:16.737205  4135 solver.cpp:189] Iteration 40, loss = 0.746781
+I0222 02:56:16.737253  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.236464 (* 0.5 = 0.118232 loss)
+I0222 02:56:16.737264  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.2571 (* 0.5 = 0.628549 loss)
+I0222 02:56:16.737272  4135 solver.cpp:464] Iteration 40, lr = 0.01
+I0222 02:56:27.817186  4135 solver.cpp:189] Iteration 60, loss = 0.74059
+I0222 02:56:27.817229  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.427254 (* 0.5 = 0.213627 loss)
+I0222 02:56:27.817245  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.05393 (* 0.5 = 0.526963 loss)
+I0222 02:56:27.817253  4135 solver.cpp:464] Iteration 60, lr = 0.01
+I0222 02:56:39.545549  4135 solver.cpp:189] Iteration 80, loss = 0.719672
+I0222 02:56:39.545594  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.461447 (* 0.5 = 0.230724 loss)
+I0222 02:56:39.545605  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.977897 (* 0.5 = 0.488949 loss)
+I0222 02:56:39.545614  4135 solver.cpp:464] Iteration 80, lr = 0.01
+I0222 02:56:48.348922  4135 solver.cpp:189] Iteration 100, loss = 0.843519
+I0222 02:56:48.348975  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.394386 (* 0.5 = 0.197193 loss)
+I0222 02:56:48.348991  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.29265 (* 0.5 = 0.646326 loss)
+I0222 02:56:48.349005  4135 solver.cpp:464] Iteration 100, lr = 0.01
+I0222 02:56:59.116569  4135 solver.cpp:189] Iteration 120, loss = 0.867973
+I0222 02:56:59.116616  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.48999 (* 0.5 = 0.244995 loss)
+I0222 02:56:59.116628  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.24596 (* 0.5 = 0.622978 loss)
+I0222 02:56:59.116637  4135 solver.cpp:464] Iteration 120, lr = 0.01
+I0222 02:57:07.958305  4135 solver.cpp:189] Iteration 140, loss = 0.775605
+I0222 02:57:07.958353  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.366458 (* 0.5 = 0.183229 loss)
+I0222 02:57:07.958364  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.18475 (* 0.5 = 0.592376 loss)
+I0222 02:57:07.958374  4135 solver.cpp:464] Iteration 140, lr = 0.01
+I0222 02:57:17.686714  4135 solver.cpp:189] Iteration 160, loss = 0.754178
+I0222 02:57:17.686771  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.359692 (* 0.5 = 0.179846 loss)
+I0222 02:57:17.686784  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.14866 (* 0.5 = 0.574332 loss)
+I0222 02:57:17.686792  4135 solver.cpp:464] Iteration 160, lr = 0.01
+I0222 02:57:28.040657  4135 solver.cpp:189] Iteration 180, loss = 0.926416
+I0222 02:57:28.040706  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.465922 (* 0.5 = 0.232961 loss)
+I0222 02:57:28.040716  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.38691 (* 0.5 = 0.693455 loss)
+I0222 02:57:28.040726  4135 solver.cpp:464] Iteration 180, lr = 0.01
+speed: 0.498s / iter
+I0222 02:57:37.683143  4135 solver.cpp:189] Iteration 200, loss = 0.852606
+I0222 02:57:37.683204  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.493325 (* 0.5 = 0.246663 loss)
+I0222 02:57:37.683225  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.21189 (* 0.5 = 0.605944 loss)
+I0222 02:57:37.683241  4135 solver.cpp:464] Iteration 200, lr = 0.01
+I0222 02:57:46.241472  4135 solver.cpp:189] Iteration 220, loss = 0.72686
+I0222 02:57:46.241534  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.440731 (* 0.5 = 0.220365 loss)
+I0222 02:57:46.241551  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.01299 (* 0.5 = 0.506495 loss)
+I0222 02:57:46.241564  4135 solver.cpp:464] Iteration 220, lr = 0.01
+I0222 02:57:54.488546  4135 solver.cpp:189] Iteration 240, loss = 0.779511
+I0222 02:57:54.488595  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.311818 (* 0.5 = 0.155909 loss)
+I0222 02:57:54.488610  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.2472 (* 0.5 = 0.623602 loss)
+I0222 02:57:54.488626  4135 solver.cpp:464] Iteration 240, lr = 0.01
+I0222 02:58:02.870774  4135 solver.cpp:189] Iteration 260, loss = 0.834983
+I0222 02:58:02.870837  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.365581 (* 0.5 = 0.182791 loss)
+I0222 02:58:02.870854  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.30438 (* 0.5 = 0.652192 loss)
+I0222 02:58:02.870867  4135 solver.cpp:464] Iteration 260, lr = 0.01
+I0222 02:58:12.746136  4135 solver.cpp:189] Iteration 280, loss = 0.730773
+I0222 02:58:12.746188  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.498958 (* 0.5 = 0.249479 loss)
+I0222 02:58:12.746204  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.962588 (* 0.5 = 0.481294 loss)
+I0222 02:58:12.746218  4135 solver.cpp:464] Iteration 280, lr = 0.01
+I0222 02:58:19.304986  4135 solver.cpp:189] Iteration 300, loss = 0.738488
+I0222 02:58:19.305042  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.449996 (* 0.5 = 0.224998 loss)
+I0222 02:58:19.305053  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.02698 (* 0.5 = 0.51349 loss)
+I0222 02:58:19.305063  4135 solver.cpp:464] Iteration 300, lr = 0.01
+I0222 02:58:27.572399  4135 solver.cpp:189] Iteration 320, loss = 0.735727
+I0222 02:58:27.572446  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.346914 (* 0.5 = 0.173457 loss)
+I0222 02:58:27.572456  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.12454 (* 0.5 = 0.56227 loss)
+I0222 02:58:27.572464  4135 solver.cpp:464] Iteration 320, lr = 0.01
+I0222 02:58:35.877964  4135 solver.cpp:189] Iteration 340, loss = 0.827871
+I0222 02:58:35.878017  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.461392 (* 0.5 = 0.230696 loss)
+I0222 02:58:35.878033  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.19435 (* 0.5 = 0.597175 loss)
+I0222 02:58:35.878047  4135 solver.cpp:464] Iteration 340, lr = 0.01
+I0222 02:58:43.599171  4135 solver.cpp:189] Iteration 360, loss = 0.375323
+I0222 02:58:43.599226  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.214233 (* 0.5 = 0.107116 loss)
+I0222 02:58:43.599237  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.536413 (* 0.5 = 0.268206 loss)
+I0222 02:58:43.599247  4135 solver.cpp:464] Iteration 360, lr = 0.01
+I0222 02:58:52.869379  4135 solver.cpp:189] Iteration 380, loss = 0.742828
+I0222 02:58:52.869437  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.55303 (* 0.5 = 0.276515 loss)
+I0222 02:58:52.869453  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.932625 (* 0.5 = 0.466313 loss)
+I0222 02:58:52.869467  4135 solver.cpp:464] Iteration 380, lr = 0.01
+speed: 0.456s / iter
+I0222 02:58:59.843101  4135 solver.cpp:189] Iteration 400, loss = 0.748671
+I0222 02:58:59.843148  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.528414 (* 0.5 = 0.264207 loss)
+I0222 02:58:59.843158  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.968928 (* 0.5 = 0.484464 loss)
+I0222 02:58:59.843168  4135 solver.cpp:464] Iteration 400, lr = 0.01
+I0222 02:59:08.347981  4135 solver.cpp:189] Iteration 420, loss = 0.827423
+I0222 02:59:08.348031  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.471597 (* 0.5 = 0.235799 loss)
+I0222 02:59:08.348042  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.18325 (* 0.5 = 0.591624 loss)
+I0222 02:59:08.348052  4135 solver.cpp:464] Iteration 420, lr = 0.01
+I0222 02:59:14.938880  4135 solver.cpp:189] Iteration 440, loss = 0.671621
+I0222 02:59:14.938930  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.348853 (* 0.5 = 0.174427 loss)
+I0222 02:59:14.938941  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.99439 (* 0.5 = 0.497195 loss)
+I0222 02:59:14.938951  4135 solver.cpp:464] Iteration 440, lr = 0.01
+I0222 02:59:23.099133  4135 solver.cpp:189] Iteration 460, loss = 0.514156
+I0222 02:59:23.099189  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.244318 (* 0.5 = 0.122159 loss)
+I0222 02:59:23.099205  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.783993 (* 0.5 = 0.391996 loss)
+I0222 02:59:23.099218  4135 solver.cpp:464] Iteration 460, lr = 0.01
+I0222 02:59:29.465978  4135 solver.cpp:189] Iteration 480, loss = 0.711745
+I0222 02:59:29.466034  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.506263 (* 0.5 = 0.253132 loss)
+I0222 02:59:29.466045  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.917226 (* 0.5 = 0.458613 loss)
+I0222 02:59:29.466054  4135 solver.cpp:464] Iteration 480, lr = 0.01
+I0222 02:59:35.772330  4135 solver.cpp:189] Iteration 500, loss = 0.770985
+I0222 02:59:35.772375  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.32088 (* 0.5 = 0.16044 loss)
+I0222 02:59:35.772387  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.22109 (* 0.5 = 0.610545 loss)
+I0222 02:59:35.772393  4135 solver.cpp:464] Iteration 500, lr = 0.01
+I0222 02:59:41.875818  4135 solver.cpp:189] Iteration 520, loss = 0.726144
+I0222 02:59:41.875866  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.542207 (* 0.5 = 0.271103 loss)
+I0222 02:59:41.875877  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.910082 (* 0.5 = 0.455041 loss)
+I0222 02:59:41.875885  4135 solver.cpp:464] Iteration 520, lr = 0.01
+I0222 02:59:48.666915  4135 solver.cpp:189] Iteration 540, loss = 0.715415
+I0222 02:59:48.666970  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.340341 (* 0.5 = 0.170171 loss)
+I0222 02:59:48.666980  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.09049 (* 0.5 = 0.545244 loss)
+I0222 02:59:48.666990  4135 solver.cpp:464] Iteration 540, lr = 0.01
+I0222 02:59:56.195709  4135 solver.cpp:189] Iteration 560, loss = 0.740795
+I0222 02:59:56.195760  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.391925 (* 0.5 = 0.195962 loss)
+I0222 02:59:56.195775  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.08967 (* 0.5 = 0.544833 loss)
+I0222 02:59:56.195790  4135 solver.cpp:464] Iteration 560, lr = 0.01
+I0222 03:00:02.553181  4135 solver.cpp:189] Iteration 580, loss = 0.700971
+I0222 03:00:02.553236  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.458464 (* 0.5 = 0.229232 loss)
+I0222 03:00:02.553251  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.943477 (* 0.5 = 0.471739 loss)
+I0222 03:00:02.553261  4135 solver.cpp:464] Iteration 580, lr = 0.01
+speed: 0.419s / iter
+I0222 03:00:08.506424  4135 solver.cpp:189] Iteration 600, loss = 0.652227
+I0222 03:00:08.506487  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.407414 (* 0.5 = 0.203707 loss)
+I0222 03:00:08.506500  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.897041 (* 0.5 = 0.448521 loss)
+I0222 03:00:08.506510  4135 solver.cpp:464] Iteration 600, lr = 0.01
+I0222 03:00:13.737226  4135 solver.cpp:189] Iteration 620, loss = 0.628579
+I0222 03:00:13.737285  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.469795 (* 0.5 = 0.234898 loss)
+I0222 03:00:13.737296  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.787362 (* 0.5 = 0.393681 loss)
+I0222 03:00:13.737306  4135 solver.cpp:464] Iteration 620, lr = 0.01
+I0222 03:00:20.079140  4135 solver.cpp:189] Iteration 640, loss = 0.714053
+I0222 03:00:20.079195  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.393462 (* 0.5 = 0.196731 loss)
+I0222 03:00:20.079210  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.03464 (* 0.5 = 0.517322 loss)
+I0222 03:00:20.079221  4135 solver.cpp:464] Iteration 640, lr = 0.01
+I0222 03:00:26.387981  4135 solver.cpp:189] Iteration 660, loss = 0.527272
+I0222 03:00:26.388038  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.308473 (* 0.5 = 0.154237 loss)
+I0222 03:00:26.388049  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.746071 (* 0.5 = 0.373035 loss)
+I0222 03:00:26.388065  4135 solver.cpp:464] Iteration 660, lr = 0.01
+I0222 03:00:33.543987  4135 solver.cpp:189] Iteration 680, loss = 0.600062
+I0222 03:00:33.544039  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.335529 (* 0.5 = 0.167765 loss)
+I0222 03:00:33.544049  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.864595 (* 0.5 = 0.432298 loss)
+I0222 03:00:33.544064  4135 solver.cpp:464] Iteration 680, lr = 0.01
+I0222 03:00:40.291563  4135 solver.cpp:189] Iteration 700, loss = 0.746539
+I0222 03:00:40.291613  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.445328 (* 0.5 = 0.222664 loss)
+I0222 03:00:40.291625  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.04775 (* 0.5 = 0.523874 loss)
+I0222 03:00:40.291633  4135 solver.cpp:464] Iteration 700, lr = 0.01
+I0222 03:00:46.195561  4135 solver.cpp:189] Iteration 720, loss = 0.615102
+I0222 03:00:46.195608  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.343552 (* 0.5 = 0.171776 loss)
+I0222 03:00:46.195619  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.886651 (* 0.5 = 0.443326 loss)
+I0222 03:00:46.195629  4135 solver.cpp:464] Iteration 720, lr = 0.01
+I0222 03:00:51.439893  4135 solver.cpp:189] Iteration 740, loss = 0.760005
+I0222 03:00:51.439939  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.387448 (* 0.5 = 0.193724 loss)
+I0222 03:00:51.439949  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.13256 (* 0.5 = 0.56628 loss)
+I0222 03:00:51.439959  4135 solver.cpp:464] Iteration 740, lr = 0.01
+I0222 03:00:56.965499  4135 solver.cpp:189] Iteration 760, loss = 0.748591
+I0222 03:00:56.965548  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.441007 (* 0.5 = 0.220503 loss)
+I0222 03:00:56.965562  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.05618 (* 0.5 = 0.528088 loss)
+I0222 03:00:56.965571  4135 solver.cpp:464] Iteration 760, lr = 0.01
+I0222 03:01:02.685741  4135 solver.cpp:189] Iteration 780, loss = 0.599951
+I0222 03:01:02.685792  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.313513 (* 0.5 = 0.156757 loss)
+I0222 03:01:02.685803  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.886389 (* 0.5 = 0.443195 loss)
+I0222 03:01:02.685814  4135 solver.cpp:464] Iteration 780, lr = 0.01
+speed: 0.388s / iter
+I0222 03:01:08.180222  4135 solver.cpp:189] Iteration 800, loss = 0.54256
+I0222 03:01:08.180270  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.363057 (* 0.5 = 0.181528 loss)
+I0222 03:01:08.180281  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.722063 (* 0.5 = 0.361032 loss)
+I0222 03:01:08.180290  4135 solver.cpp:464] Iteration 800, lr = 0.01
+I0222 03:01:14.180722  4135 solver.cpp:189] Iteration 820, loss = 0.629937
+I0222 03:01:14.180773  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.406542 (* 0.5 = 0.203271 loss)
+I0222 03:01:14.180784  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.853333 (* 0.5 = 0.426666 loss)
+I0222 03:01:14.180794  4135 solver.cpp:464] Iteration 820, lr = 0.01
+I0222 03:01:19.782016  4135 solver.cpp:189] Iteration 840, loss = 0.628907
+I0222 03:01:19.782063  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.469453 (* 0.5 = 0.234727 loss)
+I0222 03:01:19.782073  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.788361 (* 0.5 = 0.394181 loss)
+I0222 03:01:19.782083  4135 solver.cpp:464] Iteration 840, lr = 0.01
+I0222 03:01:24.842272  4135 solver.cpp:189] Iteration 860, loss = 0.552011
+I0222 03:01:24.842316  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.381351 (* 0.5 = 0.190676 loss)
+I0222 03:01:24.842326  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.72267 (* 0.5 = 0.361335 loss)
+I0222 03:01:24.842335  4135 solver.cpp:464] Iteration 860, lr = 0.01
+I0222 03:01:30.394923  4135 solver.cpp:189] Iteration 880, loss = 0.643485
+I0222 03:01:30.394966  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.439898 (* 0.5 = 0.219949 loss)
+I0222 03:01:30.394980  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.847072 (* 0.5 = 0.423536 loss)
+I0222 03:01:30.394990  4135 solver.cpp:464] Iteration 880, lr = 0.01
+I0222 03:01:36.009198  4135 solver.cpp:189] Iteration 900, loss = 0.718879
+I0222 03:01:36.009245  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.432258 (* 0.5 = 0.216129 loss)
+I0222 03:01:36.009268  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.0055 (* 0.5 = 0.50275 loss)
+I0222 03:01:36.009284  4135 solver.cpp:464] Iteration 900, lr = 0.01
+I0222 03:01:41.691709  4135 solver.cpp:189] Iteration 920, loss = 0.76144
+I0222 03:01:41.691753  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.376706 (* 0.5 = 0.188353 loss)
+I0222 03:01:41.691763  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.14617 (* 0.5 = 0.573087 loss)
+I0222 03:01:41.691773  4135 solver.cpp:464] Iteration 920, lr = 0.01
+I0222 03:01:47.731083  4135 solver.cpp:189] Iteration 940, loss = 0.580924
+I0222 03:01:47.731134  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.400805 (* 0.5 = 0.200403 loss)
+I0222 03:01:47.731145  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.761042 (* 0.5 = 0.380521 loss)
+I0222 03:01:47.731154  4135 solver.cpp:464] Iteration 940, lr = 0.01
+I0222 03:01:53.154348  4135 solver.cpp:189] Iteration 960, loss = 0.393356
+I0222 03:01:53.154397  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.235087 (* 0.5 = 0.117543 loss)
+I0222 03:01:53.154407  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.551624 (* 0.5 = 0.275812 loss)
+I0222 03:01:53.154417  4135 solver.cpp:464] Iteration 960, lr = 0.01
+I0222 03:01:58.651593  4135 solver.cpp:189] Iteration 980, loss = 0.585904
+I0222 03:01:58.651638  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.257121 (* 0.5 = 0.12856 loss)
+I0222 03:01:58.651649  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.914688 (* 0.5 = 0.457344 loss)
+I0222 03:01:58.651659  4135 solver.cpp:464] Iteration 980, lr = 0.01
+speed: 0.367s / iter
+I0222 03:02:03.952931  4135 solver.cpp:189] Iteration 1000, loss = 0.700033
+I0222 03:02:03.952977  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.351923 (* 0.5 = 0.175961 loss)
+I0222 03:02:03.952988  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.04814 (* 0.5 = 0.524072 loss)
+I0222 03:02:03.952997  4135 solver.cpp:464] Iteration 1000, lr = 0.01
+I0222 03:02:09.316465  4135 solver.cpp:189] Iteration 1020, loss = 0.61238
+I0222 03:02:09.316510  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.30933 (* 0.5 = 0.154665 loss)
+I0222 03:02:09.316521  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.915431 (* 0.5 = 0.457715 loss)
+I0222 03:02:09.316531  4135 solver.cpp:464] Iteration 1020, lr = 0.01
+I0222 03:02:14.934165  4135 solver.cpp:189] Iteration 1040, loss = 0.689183
+I0222 03:02:14.934211  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.424139 (* 0.5 = 0.212069 loss)
+I0222 03:02:14.934222  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.954226 (* 0.5 = 0.477113 loss)
+I0222 03:02:14.934231  4135 solver.cpp:464] Iteration 1040, lr = 0.01
+I0222 03:02:20.671352  4135 solver.cpp:189] Iteration 1060, loss = 0.614937
+I0222 03:02:20.671397  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.409213 (* 0.5 = 0.204607 loss)
+I0222 03:02:20.671408  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.820662 (* 0.5 = 0.410331 loss)
+I0222 03:02:20.671416  4135 solver.cpp:464] Iteration 1060, lr = 0.01
+I0222 03:02:26.490605  4135 solver.cpp:189] Iteration 1080, loss = 0.634901
+I0222 03:02:26.490654  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.441049 (* 0.5 = 0.220525 loss)
+I0222 03:02:26.490665  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.828752 (* 0.5 = 0.414376 loss)
+I0222 03:02:26.490674  4135 solver.cpp:464] Iteration 1080, lr = 0.01
+I0222 03:02:32.237071  4135 solver.cpp:189] Iteration 1100, loss = 0.562078
+I0222 03:02:32.237135  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.338583 (* 0.5 = 0.169291 loss)
+I0222 03:02:32.237148  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.785572 (* 0.5 = 0.392786 loss)
+I0222 03:02:32.237157  4135 solver.cpp:464] Iteration 1100, lr = 0.01
+I0222 03:02:37.240548  4135 solver.cpp:189] Iteration 1120, loss = 0.531041
+I0222 03:02:37.240599  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.279044 (* 0.5 = 0.139522 loss)
+I0222 03:02:37.240617  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.783038 (* 0.5 = 0.391519 loss)
+I0222 03:02:37.240629  4135 solver.cpp:464] Iteration 1120, lr = 0.01
+I0222 03:02:43.131237  4135 solver.cpp:189] Iteration 1140, loss = 0.656818
+I0222 03:02:43.131283  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.40082 (* 0.5 = 0.20041 loss)
+I0222 03:02:43.131294  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.912816 (* 0.5 = 0.456408 loss)
+I0222 03:02:43.131304  4135 solver.cpp:464] Iteration 1140, lr = 0.01
+I0222 03:02:48.443295  4135 solver.cpp:189] Iteration 1160, loss = 0.677497
+I0222 03:02:48.443348  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.429163 (* 0.5 = 0.214581 loss)
+I0222 03:02:48.443359  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.925831 (* 0.5 = 0.462916 loss)
+I0222 03:02:48.443369  4135 solver.cpp:464] Iteration 1160, lr = 0.01
+I0222 03:02:54.649783  4135 solver.cpp:189] Iteration 1180, loss = 0.785299
+I0222 03:02:54.649837  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.483979 (* 0.5 = 0.24199 loss)
+I0222 03:02:54.649854  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.08662 (* 0.5 = 0.54331 loss)
+I0222 03:02:54.649868  4135 solver.cpp:464] Iteration 1180, lr = 0.01
+speed: 0.352s / iter
+I0222 03:02:59.996943  4135 solver.cpp:189] Iteration 1200, loss = 0.640462
+I0222 03:02:59.996991  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.388572 (* 0.5 = 0.194286 loss)
+I0222 03:02:59.997006  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.892353 (* 0.5 = 0.446176 loss)
+I0222 03:02:59.997020  4135 solver.cpp:464] Iteration 1200, lr = 0.01
+I0222 03:03:05.656019  4135 solver.cpp:189] Iteration 1220, loss = 0.7323
+I0222 03:03:05.656072  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.38761 (* 0.5 = 0.193805 loss)
+I0222 03:03:05.656083  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.07699 (* 0.5 = 0.538495 loss)
+I0222 03:03:05.656093  4135 solver.cpp:464] Iteration 1220, lr = 0.01
+I0222 03:03:11.597250  4135 solver.cpp:189] Iteration 1240, loss = 0.504846
+I0222 03:03:11.597298  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.31819 (* 0.5 = 0.159095 loss)
+I0222 03:03:11.597311  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.691502 (* 0.5 = 0.345751 loss)
+I0222 03:03:11.597319  4135 solver.cpp:464] Iteration 1240, lr = 0.01
+I0222 03:03:17.512557  4135 solver.cpp:189] Iteration 1260, loss = 0.712222
+I0222 03:03:17.512605  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.420423 (* 0.5 = 0.210212 loss)
+I0222 03:03:17.512616  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.00402 (* 0.5 = 0.50201 loss)
+I0222 03:03:17.512625  4135 solver.cpp:464] Iteration 1260, lr = 0.01
+I0222 03:03:23.107405  4135 solver.cpp:189] Iteration 1280, loss = 0.595789
+I0222 03:03:23.107450  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.494534 (* 0.5 = 0.247267 loss)
+I0222 03:03:23.107460  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.697045 (* 0.5 = 0.348522 loss)
+I0222 03:03:23.107470  4135 solver.cpp:464] Iteration 1280, lr = 0.01
+I0222 03:03:28.563907  4135 solver.cpp:189] Iteration 1300, loss = 0.637254
+I0222 03:03:28.563954  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.410625 (* 0.5 = 0.205312 loss)
+I0222 03:03:28.563964  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.863882 (* 0.5 = 0.431941 loss)
+I0222 03:03:28.563974  4135 solver.cpp:464] Iteration 1300, lr = 0.01
+I0222 03:03:34.181404  4135 solver.cpp:189] Iteration 1320, loss = 0.582296
+I0222 03:03:34.181449  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.222609 (* 0.5 = 0.111304 loss)
+I0222 03:03:34.181460  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.941983 (* 0.5 = 0.470992 loss)
+I0222 03:03:34.181469  4135 solver.cpp:464] Iteration 1320, lr = 0.01
+I0222 03:03:39.551028  4135 solver.cpp:189] Iteration 1340, loss = 0.681792
+I0222 03:03:39.551081  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.41673 (* 0.5 = 0.208365 loss)
+I0222 03:03:39.551093  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.946854 (* 0.5 = 0.473427 loss)
+I0222 03:03:39.551103  4135 solver.cpp:464] Iteration 1340, lr = 0.01
+I0222 03:03:45.034355  4135 solver.cpp:189] Iteration 1360, loss = 0.632112
+I0222 03:03:45.034407  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.453748 (* 0.5 = 0.226874 loss)
+I0222 03:03:45.034420  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.810476 (* 0.5 = 0.405238 loss)
+I0222 03:03:45.034428  4135 solver.cpp:464] Iteration 1360, lr = 0.01
+I0222 03:03:50.951686  4135 solver.cpp:189] Iteration 1380, loss = 0.70705
+I0222 03:03:50.951735  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.413972 (* 0.5 = 0.206986 loss)
+I0222 03:03:50.951750  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.00013 (* 0.5 = 0.500064 loss)
+I0222 03:03:50.951764  4135 solver.cpp:464] Iteration 1380, lr = 0.01
+speed: 0.342s / iter
+I0222 03:03:56.778442  4135 solver.cpp:189] Iteration 1400, loss = 0.606245
+I0222 03:03:56.778488  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.360149 (* 0.5 = 0.180074 loss)
+I0222 03:03:56.778498  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.85234 (* 0.5 = 0.42617 loss)
+I0222 03:03:56.778508  4135 solver.cpp:464] Iteration 1400, lr = 0.01
+I0222 03:04:02.326740  4135 solver.cpp:189] Iteration 1420, loss = 0.861797
+I0222 03:04:02.326787  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.540962 (* 0.5 = 0.270481 loss)
+I0222 03:04:02.326799  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.18263 (* 0.5 = 0.591316 loss)
+I0222 03:04:02.326808  4135 solver.cpp:464] Iteration 1420, lr = 0.01
+I0222 03:04:08.035912  4135 solver.cpp:189] Iteration 1440, loss = 0.490433
+I0222 03:04:08.035965  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.261175 (* 0.5 = 0.130587 loss)
+I0222 03:04:08.035976  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.719691 (* 0.5 = 0.359846 loss)
+I0222 03:04:08.035986  4135 solver.cpp:464] Iteration 1440, lr = 0.01
+I0222 03:04:13.612642  4135 solver.cpp:189] Iteration 1460, loss = 0.523994
+I0222 03:04:13.612686  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.372159 (* 0.5 = 0.18608 loss)
+I0222 03:04:13.612697  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.675828 (* 0.5 = 0.337914 loss)
+I0222 03:04:13.612706  4135 solver.cpp:464] Iteration 1460, lr = 0.01
+I0222 03:04:19.340986  4135 solver.cpp:189] Iteration 1480, loss = 0.577272
+I0222 03:04:19.341038  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.407577 (* 0.5 = 0.203789 loss)
+I0222 03:04:19.341049  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.746966 (* 0.5 = 0.373483 loss)
+I0222 03:04:19.341059  4135 solver.cpp:464] Iteration 1480, lr = 0.01
+I0222 03:04:24.925148  4135 solver.cpp:189] Iteration 1500, loss = 0.558467
+I0222 03:04:24.925199  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.374911 (* 0.5 = 0.187455 loss)
+I0222 03:04:24.925211  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.742022 (* 0.5 = 0.371011 loss)
+I0222 03:04:24.925220  4135 solver.cpp:464] Iteration 1500, lr = 0.01
+I0222 03:04:30.680860  4135 solver.cpp:189] Iteration 1520, loss = 0.472228
+I0222 03:04:30.680907  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.419843 (* 0.5 = 0.209922 loss)
+I0222 03:04:30.680917  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.524612 (* 0.5 = 0.262306 loss)
+I0222 03:04:30.680927  4135 solver.cpp:464] Iteration 1520, lr = 0.01
+I0222 03:04:36.551033  4135 solver.cpp:189] Iteration 1540, loss = 0.583236
+I0222 03:04:36.551080  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.415554 (* 0.5 = 0.207777 loss)
+I0222 03:04:36.551091  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.750917 (* 0.5 = 0.375459 loss)
+I0222 03:04:36.551106  4135 solver.cpp:464] Iteration 1540, lr = 0.01
+I0222 03:04:42.724280  4135 solver.cpp:189] Iteration 1560, loss = 0.678906
+I0222 03:04:42.724330  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.503423 (* 0.5 = 0.251711 loss)
+I0222 03:04:42.724342  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.854389 (* 0.5 = 0.427195 loss)
+I0222 03:04:42.724351  4135 solver.cpp:464] Iteration 1560, lr = 0.01
+I0222 03:04:48.466537  4135 solver.cpp:189] Iteration 1580, loss = 0.621221
+I0222 03:04:48.466580  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.350392 (* 0.5 = 0.175196 loss)
+I0222 03:04:48.466590  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.892049 (* 0.5 = 0.446025 loss)
+I0222 03:04:48.466599  4135 solver.cpp:464] Iteration 1580, lr = 0.01
+speed: 0.335s / iter
+I0222 03:04:53.714576  4135 solver.cpp:189] Iteration 1600, loss = 0.589392
+I0222 03:04:53.714623  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.496396 (* 0.5 = 0.248198 loss)
+I0222 03:04:53.714635  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.682389 (* 0.5 = 0.341195 loss)
+I0222 03:04:53.714645  4135 solver.cpp:464] Iteration 1600, lr = 0.01
+I0222 03:04:59.287331  4135 solver.cpp:189] Iteration 1620, loss = 0.674496
+I0222 03:04:59.287380  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.326968 (* 0.5 = 0.163484 loss)
+I0222 03:04:59.287391  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.02202 (* 0.5 = 0.511012 loss)
+I0222 03:04:59.287401  4135 solver.cpp:464] Iteration 1620, lr = 0.01
+I0222 03:05:04.659160  4135 solver.cpp:189] Iteration 1640, loss = 0.551065
+I0222 03:05:04.659204  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.408382 (* 0.5 = 0.204191 loss)
+I0222 03:05:04.659219  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.693748 (* 0.5 = 0.346874 loss)
+I0222 03:05:04.659229  4135 solver.cpp:464] Iteration 1640, lr = 0.01
+I0222 03:05:09.921473  4135 solver.cpp:189] Iteration 1660, loss = 0.599712
+I0222 03:05:09.921525  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.425767 (* 0.5 = 0.212883 loss)
+I0222 03:05:09.921535  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.773658 (* 0.5 = 0.386829 loss)
+I0222 03:05:09.921545  4135 solver.cpp:464] Iteration 1660, lr = 0.01
+I0222 03:05:15.145728  4135 solver.cpp:189] Iteration 1680, loss = 0.566793
+I0222 03:05:15.145772  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.400737 (* 0.5 = 0.200368 loss)
+I0222 03:05:15.145782  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.732849 (* 0.5 = 0.366424 loss)
+I0222 03:05:15.145792  4135 solver.cpp:464] Iteration 1680, lr = 0.01
+I0222 03:05:20.586241  4135 solver.cpp:189] Iteration 1700, loss = 0.613391
+I0222 03:05:20.586289  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.399339 (* 0.5 = 0.19967 loss)
+I0222 03:05:20.586302  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.827443 (* 0.5 = 0.413721 loss)
+I0222 03:05:20.586311  4135 solver.cpp:464] Iteration 1700, lr = 0.01
+I0222 03:05:26.247835  4135 solver.cpp:189] Iteration 1720, loss = 0.510636
+I0222 03:05:26.247886  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.295777 (* 0.5 = 0.147889 loss)
+I0222 03:05:26.247901  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.725494 (* 0.5 = 0.362747 loss)
+I0222 03:05:26.247915  4135 solver.cpp:464] Iteration 1720, lr = 0.01
+I0222 03:05:31.757939  4135 solver.cpp:189] Iteration 1740, loss = 0.581541
+I0222 03:05:31.757984  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.3837 (* 0.5 = 0.19185 loss)
+I0222 03:05:31.757995  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.779381 (* 0.5 = 0.389691 loss)
+I0222 03:05:31.758005  4135 solver.cpp:464] Iteration 1740, lr = 0.01
+I0222 03:05:37.563630  4135 solver.cpp:189] Iteration 1760, loss = 0.571262
+I0222 03:05:37.563680  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.481642 (* 0.5 = 0.240821 loss)
+I0222 03:05:37.563690  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.660881 (* 0.5 = 0.33044 loss)
+I0222 03:05:37.563700  4135 solver.cpp:464] Iteration 1760, lr = 0.01
+I0222 03:05:42.978056  4135 solver.cpp:189] Iteration 1780, loss = 0.430805
+I0222 03:05:42.978103  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.250906 (* 0.5 = 0.125453 loss)
+I0222 03:05:42.978118  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.610704 (* 0.5 = 0.305352 loss)
+I0222 03:05:42.978128  4135 solver.cpp:464] Iteration 1780, lr = 0.01
+speed: 0.328s / iter
+I0222 03:05:48.367231  4135 solver.cpp:189] Iteration 1800, loss = 0.556046
+I0222 03:05:48.367287  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.417582 (* 0.5 = 0.208791 loss)
+I0222 03:05:48.367298  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.69451 (* 0.5 = 0.347255 loss)
+I0222 03:05:48.367308  4135 solver.cpp:464] Iteration 1800, lr = 0.01
+I0222 03:05:53.517833  4135 solver.cpp:189] Iteration 1820, loss = 0.593423
+I0222 03:05:53.517889  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.461334 (* 0.5 = 0.230667 loss)
+I0222 03:05:53.517899  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.725511 (* 0.5 = 0.362756 loss)
+I0222 03:05:53.517910  4135 solver.cpp:464] Iteration 1820, lr = 0.01
+I0222 03:05:59.001065  4135 solver.cpp:189] Iteration 1840, loss = 0.600019
+I0222 03:05:59.001112  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.336497 (* 0.5 = 0.168248 loss)
+I0222 03:05:59.001132  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.863542 (* 0.5 = 0.431771 loss)
+I0222 03:05:59.001142  4135 solver.cpp:464] Iteration 1840, lr = 0.01
+I0222 03:06:04.603159  4135 solver.cpp:189] Iteration 1860, loss = 0.505876
+I0222 03:06:04.603210  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.229003 (* 0.5 = 0.114501 loss)
+I0222 03:06:04.603221  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.78275 (* 0.5 = 0.391375 loss)
+I0222 03:06:04.603231  4135 solver.cpp:464] Iteration 1860, lr = 0.01
+I0222 03:06:09.990849  4135 solver.cpp:189] Iteration 1880, loss = 0.721456
+I0222 03:06:09.990897  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.394161 (* 0.5 = 0.197081 loss)
+I0222 03:06:09.990908  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.04875 (* 0.5 = 0.524376 loss)
+I0222 03:06:09.990918  4135 solver.cpp:464] Iteration 1880, lr = 0.01
+I0222 03:06:16.125835  4135 solver.cpp:189] Iteration 1900, loss = 0.55872
+I0222 03:06:16.125886  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.354414 (* 0.5 = 0.177207 loss)
+I0222 03:06:16.125897  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.763025 (* 0.5 = 0.381513 loss)
+I0222 03:06:16.125907  4135 solver.cpp:464] Iteration 1900, lr = 0.01
+I0222 03:06:21.831168  4135 solver.cpp:189] Iteration 1920, loss = 0.624073
+I0222 03:06:21.831215  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.392998 (* 0.5 = 0.196499 loss)
+I0222 03:06:21.831226  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.855147 (* 0.5 = 0.427574 loss)
+I0222 03:06:21.831236  4135 solver.cpp:464] Iteration 1920, lr = 0.01
+I0222 03:06:27.425487  4135 solver.cpp:189] Iteration 1940, loss = 0.59733
+I0222 03:06:27.425532  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.369895 (* 0.5 = 0.184948 loss)
+I0222 03:06:27.425542  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.824766 (* 0.5 = 0.412383 loss)
+I0222 03:06:27.425552  4135 solver.cpp:464] Iteration 1940, lr = 0.01
+I0222 03:06:32.758355  4135 solver.cpp:189] Iteration 1960, loss = 0.483038
+I0222 03:06:32.758401  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.497814 (* 0.5 = 0.248907 loss)
+I0222 03:06:32.758411  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.468262 (* 0.5 = 0.234131 loss)
+I0222 03:06:32.758421  4135 solver.cpp:464] Iteration 1960, lr = 0.01
+I0222 03:06:38.396198  4135 solver.cpp:189] Iteration 1980, loss = 0.601773
+I0222 03:06:38.396246  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.396549 (* 0.5 = 0.198274 loss)
+I0222 03:06:38.396257  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.806998 (* 0.5 = 0.403499 loss)
+I0222 03:06:38.396267  4135 solver.cpp:464] Iteration 1980, lr = 0.01
+speed: 0.323s / iter
+I0222 03:06:44.077389  4135 solver.cpp:189] Iteration 2000, loss = 0.722603
+I0222 03:06:44.077440  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.442357 (* 0.5 = 0.221179 loss)
+I0222 03:06:44.077450  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.00285 (* 0.5 = 0.501424 loss)
+I0222 03:06:44.077460  4135 solver.cpp:464] Iteration 2000, lr = 0.01
+I0222 03:06:49.668076  4135 solver.cpp:189] Iteration 2020, loss = 0.466707
+I0222 03:06:49.668130  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.289069 (* 0.5 = 0.144534 loss)
+I0222 03:06:49.668141  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.644345 (* 0.5 = 0.322173 loss)
+I0222 03:06:49.668151  4135 solver.cpp:464] Iteration 2020, lr = 0.01
+I0222 03:06:55.050665  4135 solver.cpp:189] Iteration 2040, loss = 0.61638
+I0222 03:06:55.050714  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.316235 (* 0.5 = 0.158117 loss)
+I0222 03:06:55.050725  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.916526 (* 0.5 = 0.458263 loss)
+I0222 03:06:55.050735  4135 solver.cpp:464] Iteration 2040, lr = 0.01
+I0222 03:07:01.848546  4135 solver.cpp:189] Iteration 2060, loss = 0.641571
+I0222 03:07:01.848595  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.477012 (* 0.5 = 0.238506 loss)
+I0222 03:07:01.848608  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.80613 (* 0.5 = 0.403065 loss)
+I0222 03:07:01.848616  4135 solver.cpp:464] Iteration 2060, lr = 0.01
+I0222 03:07:07.208897  4135 solver.cpp:189] Iteration 2080, loss = 0.526256
+I0222 03:07:07.208950  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.252187 (* 0.5 = 0.126094 loss)
+I0222 03:07:07.208961  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.800324 (* 0.5 = 0.400162 loss)
+I0222 03:07:07.208971  4135 solver.cpp:464] Iteration 2080, lr = 0.01
+I0222 03:07:13.406028  4135 solver.cpp:189] Iteration 2100, loss = 0.552129
+I0222 03:07:13.406081  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.3373 (* 0.5 = 0.16865 loss)
+I0222 03:07:13.406098  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.766958 (* 0.5 = 0.383479 loss)
+I0222 03:07:13.406112  4135 solver.cpp:464] Iteration 2100, lr = 0.01
+I0222 03:07:19.139786  4135 solver.cpp:189] Iteration 2120, loss = 0.662441
+I0222 03:07:19.139842  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.499726 (* 0.5 = 0.249863 loss)
+I0222 03:07:19.139858  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.825156 (* 0.5 = 0.412578 loss)
+I0222 03:07:19.139870  4135 solver.cpp:464] Iteration 2120, lr = 0.01
+I0222 03:07:25.544013  4135 solver.cpp:189] Iteration 2140, loss = 0.612768
+I0222 03:07:25.544064  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.460852 (* 0.5 = 0.230426 loss)
+I0222 03:07:25.544081  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.764684 (* 0.5 = 0.382342 loss)
+I0222 03:07:25.544095  4135 solver.cpp:464] Iteration 2140, lr = 0.01
+I0222 03:07:31.142371  4135 solver.cpp:189] Iteration 2160, loss = 0.677603
+I0222 03:07:31.142426  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.442976 (* 0.5 = 0.221488 loss)
+I0222 03:07:31.142437  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.912231 (* 0.5 = 0.456116 loss)
+I0222 03:07:31.142447  4135 solver.cpp:464] Iteration 2160, lr = 0.01
+I0222 03:07:37.303858  4135 solver.cpp:189] Iteration 2180, loss = 0.475164
+I0222 03:07:37.303901  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.32396 (* 0.5 = 0.16198 loss)
+I0222 03:07:37.303912  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.626367 (* 0.5 = 0.313184 loss)
+I0222 03:07:37.303922  4135 solver.cpp:464] Iteration 2180, lr = 0.01
+speed: 0.321s / iter
+I0222 03:07:43.956671  4135 solver.cpp:189] Iteration 2200, loss = 0.645793
+I0222 03:07:43.956722  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.423918 (* 0.5 = 0.211959 loss)
+I0222 03:07:43.956734  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.867669 (* 0.5 = 0.433835 loss)
+I0222 03:07:43.956743  4135 solver.cpp:464] Iteration 2200, lr = 0.01
+I0222 03:07:49.270758  4135 solver.cpp:189] Iteration 2220, loss = 0.650811
+I0222 03:07:49.270808  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.477232 (* 0.5 = 0.238616 loss)
+I0222 03:07:49.270818  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.824391 (* 0.5 = 0.412196 loss)
+I0222 03:07:49.270828  4135 solver.cpp:464] Iteration 2220, lr = 0.01
+I0222 03:07:55.118604  4135 solver.cpp:189] Iteration 2240, loss = 0.554538
+I0222 03:07:55.118654  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.440795 (* 0.5 = 0.220397 loss)
+I0222 03:07:55.118664  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.66828 (* 0.5 = 0.33414 loss)
+I0222 03:07:55.118674  4135 solver.cpp:464] Iteration 2240, lr = 0.01
+I0222 03:08:01.172426  4135 solver.cpp:189] Iteration 2260, loss = 0.440446
+I0222 03:08:01.172473  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.38408 (* 0.5 = 0.19204 loss)
+I0222 03:08:01.172484  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.496813 (* 0.5 = 0.248406 loss)
+I0222 03:08:01.172493  4135 solver.cpp:464] Iteration 2260, lr = 0.01
+I0222 03:08:07.300143  4135 solver.cpp:189] Iteration 2280, loss = 0.548858
+I0222 03:08:07.300191  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.256072 (* 0.5 = 0.128036 loss)
+I0222 03:08:07.300202  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.841643 (* 0.5 = 0.420822 loss)
+I0222 03:08:07.300212  4135 solver.cpp:464] Iteration 2280, lr = 0.01
+I0222 03:08:13.031087  4135 solver.cpp:189] Iteration 2300, loss = 0.633977
+I0222 03:08:13.031139  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.448667 (* 0.5 = 0.224334 loss)
+I0222 03:08:13.031149  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.819286 (* 0.5 = 0.409643 loss)
+I0222 03:08:13.031159  4135 solver.cpp:464] Iteration 2300, lr = 0.01
+I0222 03:08:19.243854  4135 solver.cpp:189] Iteration 2320, loss = 0.895625
+I0222 03:08:19.243901  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.367316 (* 0.5 = 0.183658 loss)
+I0222 03:08:19.243911  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.42393 (* 0.5 = 0.711967 loss)
+I0222 03:08:19.243921  4135 solver.cpp:464] Iteration 2320, lr = 0.01
+I0222 03:08:25.528517  4135 solver.cpp:189] Iteration 2340, loss = 0.54292
+I0222 03:08:25.528565  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.351869 (* 0.5 = 0.175935 loss)
+I0222 03:08:25.528575  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.733971 (* 0.5 = 0.366985 loss)
+I0222 03:08:25.528585  4135 solver.cpp:464] Iteration 2340, lr = 0.01
+I0222 03:08:31.056804  4135 solver.cpp:189] Iteration 2360, loss = 0.474714
+I0222 03:08:31.056849  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.420944 (* 0.5 = 0.210472 loss)
+I0222 03:08:31.056860  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.528484 (* 0.5 = 0.264242 loss)
+I0222 03:08:31.056870  4135 solver.cpp:464] Iteration 2360, lr = 0.01
+I0222 03:08:36.898223  4135 solver.cpp:189] Iteration 2380, loss = 0.574805
+I0222 03:08:36.898277  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.324559 (* 0.5 = 0.16228 loss)
+I0222 03:08:36.898288  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.82505 (* 0.5 = 0.412525 loss)
+I0222 03:08:36.898298  4135 solver.cpp:464] Iteration 2380, lr = 0.01
+speed: 0.319s / iter
+I0222 03:08:42.714232  4135 solver.cpp:189] Iteration 2400, loss = 0.562469
+I0222 03:08:42.714277  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.281984 (* 0.5 = 0.140992 loss)
+I0222 03:08:42.714287  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.842954 (* 0.5 = 0.421477 loss)
+I0222 03:08:42.714296  4135 solver.cpp:464] Iteration 2400, lr = 0.01
+I0222 03:08:48.187953  4135 solver.cpp:189] Iteration 2420, loss = 0.779213
+I0222 03:08:48.188001  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.424818 (* 0.5 = 0.212409 loss)
+I0222 03:08:48.188011  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.13361 (* 0.5 = 0.566804 loss)
+I0222 03:08:48.188021  4135 solver.cpp:464] Iteration 2420, lr = 0.01
+I0222 03:08:54.173269  4135 solver.cpp:189] Iteration 2440, loss = 0.653468
+I0222 03:08:54.173321  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.352418 (* 0.5 = 0.176209 loss)
+I0222 03:08:54.173331  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.954518 (* 0.5 = 0.477259 loss)
+I0222 03:08:54.173341  4135 solver.cpp:464] Iteration 2440, lr = 0.01
+I0222 03:09:00.075023  4135 solver.cpp:189] Iteration 2460, loss = 0.689781
+I0222 03:09:00.075070  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.518251 (* 0.5 = 0.259125 loss)
+I0222 03:09:00.075080  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.861311 (* 0.5 = 0.430655 loss)
+I0222 03:09:00.075090  4135 solver.cpp:464] Iteration 2460, lr = 0.01
+I0222 03:09:05.585853  4135 solver.cpp:189] Iteration 2480, loss = 0.53273
+I0222 03:09:05.585906  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.347395 (* 0.5 = 0.173698 loss)
+I0222 03:09:05.585916  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.718065 (* 0.5 = 0.359032 loss)
+I0222 03:09:05.585925  4135 solver.cpp:464] Iteration 2480, lr = 0.01
+I0222 03:09:12.223141  4135 solver.cpp:189] Iteration 2500, loss = 0.595339
+I0222 03:09:12.223188  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.383805 (* 0.5 = 0.191903 loss)
+I0222 03:09:12.223199  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.806872 (* 0.5 = 0.403436 loss)
+I0222 03:09:12.223208  4135 solver.cpp:464] Iteration 2500, lr = 0.01
+I0222 03:09:19.188578  4135 solver.cpp:189] Iteration 2520, loss = 0.46978
+I0222 03:09:19.188628  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.478338 (* 0.5 = 0.239169 loss)
+I0222 03:09:19.188639  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.461223 (* 0.5 = 0.230611 loss)
+I0222 03:09:19.188649  4135 solver.cpp:464] Iteration 2520, lr = 0.01
+I0222 03:09:26.060889  4135 solver.cpp:189] Iteration 2540, loss = 0.548675
+I0222 03:09:26.060936  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.400123 (* 0.5 = 0.200062 loss)
+I0222 03:09:26.060947  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.697227 (* 0.5 = 0.348613 loss)
+I0222 03:09:26.060956  4135 solver.cpp:464] Iteration 2540, lr = 0.01
+I0222 03:09:31.963047  4135 solver.cpp:189] Iteration 2560, loss = 0.572903
+I0222 03:09:31.963109  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.374782 (* 0.5 = 0.187391 loss)
+I0222 03:09:31.963124  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.771024 (* 0.5 = 0.385512 loss)
+I0222 03:09:31.963137  4135 solver.cpp:464] Iteration 2560, lr = 0.01
+I0222 03:09:38.043139  4135 solver.cpp:189] Iteration 2580, loss = 0.539631
+I0222 03:09:38.043200  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.286678 (* 0.5 = 0.143339 loss)
+I0222 03:09:38.043211  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.792583 (* 0.5 = 0.396292 loss)
+I0222 03:09:38.043222  4135 solver.cpp:464] Iteration 2580, lr = 0.01
+speed: 0.318s / iter
+I0222 03:09:43.704844  4135 solver.cpp:189] Iteration 2600, loss = 0.48857
+I0222 03:09:43.704897  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.34243 (* 0.5 = 0.171215 loss)
+I0222 03:09:43.704908  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.63471 (* 0.5 = 0.317355 loss)
+I0222 03:09:43.704918  4135 solver.cpp:464] Iteration 2600, lr = 0.01
+I0222 03:09:49.504868  4135 solver.cpp:189] Iteration 2620, loss = 0.613013
+I0222 03:09:49.504926  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.310625 (* 0.5 = 0.155313 loss)
+I0222 03:09:49.504937  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.9154 (* 0.5 = 0.4577 loss)
+I0222 03:09:49.504948  4135 solver.cpp:464] Iteration 2620, lr = 0.01
+I0222 03:09:55.362648  4135 solver.cpp:189] Iteration 2640, loss = 0.616306
+I0222 03:09:55.362706  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.454679 (* 0.5 = 0.227339 loss)
+I0222 03:09:55.362717  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.777933 (* 0.5 = 0.388966 loss)
+I0222 03:09:55.362727  4135 solver.cpp:464] Iteration 2640, lr = 0.01
+I0222 03:10:01.020313  4135 solver.cpp:189] Iteration 2660, loss = 0.528239
+I0222 03:10:01.020364  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.407896 (* 0.5 = 0.203948 loss)
+I0222 03:10:01.020375  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.648581 (* 0.5 = 0.324291 loss)
+I0222 03:10:01.020386  4135 solver.cpp:464] Iteration 2660, lr = 0.01
+I0222 03:10:06.573245  4135 solver.cpp:189] Iteration 2680, loss = 0.43252
+I0222 03:10:06.573290  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.28625 (* 0.5 = 0.143125 loss)
+I0222 03:10:06.573302  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.57879 (* 0.5 = 0.289395 loss)
+I0222 03:10:06.573312  4135 solver.cpp:464] Iteration 2680, lr = 0.01
+I0222 03:10:12.233080  4135 solver.cpp:189] Iteration 2700, loss = 0.437142
+I0222 03:10:12.233135  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.370916 (* 0.5 = 0.185458 loss)
+I0222 03:10:12.233146  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.503367 (* 0.5 = 0.251684 loss)
+I0222 03:10:12.233156  4135 solver.cpp:464] Iteration 2700, lr = 0.01
+I0222 03:10:17.937938  4135 solver.cpp:189] Iteration 2720, loss = 0.577398
+I0222 03:10:17.937986  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.273529 (* 0.5 = 0.136764 loss)
+I0222 03:10:17.937997  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.881267 (* 0.5 = 0.440634 loss)
+I0222 03:10:17.938006  4135 solver.cpp:464] Iteration 2720, lr = 0.01
+I0222 03:10:23.659597  4135 solver.cpp:189] Iteration 2740, loss = 0.547678
+I0222 03:10:23.659646  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.375109 (* 0.5 = 0.187555 loss)
+I0222 03:10:23.659657  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.720247 (* 0.5 = 0.360123 loss)
+I0222 03:10:23.659667  4135 solver.cpp:464] Iteration 2740, lr = 0.01
+I0222 03:10:29.376765  4135 solver.cpp:189] Iteration 2760, loss = 0.523757
+I0222 03:10:29.376811  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.395852 (* 0.5 = 0.197926 loss)
+I0222 03:10:29.376821  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.651662 (* 0.5 = 0.325831 loss)
+I0222 03:10:29.376832  4135 solver.cpp:464] Iteration 2760, lr = 0.01
+I0222 03:10:35.069138  4135 solver.cpp:189] Iteration 2780, loss = 0.462347
+I0222 03:10:35.069188  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.360336 (* 0.5 = 0.180168 loss)
+I0222 03:10:35.069200  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.564359 (* 0.5 = 0.28218 loss)
+I0222 03:10:35.069210  4135 solver.cpp:464] Iteration 2780, lr = 0.01
+speed: 0.315s / iter
+I0222 03:10:40.667814  4135 solver.cpp:189] Iteration 2800, loss = 0.48018
+I0222 03:10:40.667866  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.363642 (* 0.5 = 0.181821 loss)
+I0222 03:10:40.667877  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.596719 (* 0.5 = 0.298359 loss)
+I0222 03:10:40.667886  4135 solver.cpp:464] Iteration 2800, lr = 0.01
+I0222 03:10:46.452354  4135 solver.cpp:189] Iteration 2820, loss = 0.550012
+I0222 03:10:46.452406  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.352322 (* 0.5 = 0.176161 loss)
+I0222 03:10:46.452417  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.747702 (* 0.5 = 0.373851 loss)
+I0222 03:10:46.452427  4135 solver.cpp:464] Iteration 2820, lr = 0.01
+I0222 03:10:52.187397  4135 solver.cpp:189] Iteration 2840, loss = 0.397606
+I0222 03:10:52.187444  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.239103 (* 0.5 = 0.119551 loss)
+I0222 03:10:52.187459  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.556108 (* 0.5 = 0.278054 loss)
+I0222 03:10:52.187469  4135 solver.cpp:464] Iteration 2840, lr = 0.01
+I0222 03:10:58.661989  4135 solver.cpp:189] Iteration 2860, loss = 0.527699
+I0222 03:10:58.662032  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.408542 (* 0.5 = 0.204271 loss)
+I0222 03:10:58.662047  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.646856 (* 0.5 = 0.323428 loss)
+I0222 03:10:58.662056  4135 solver.cpp:464] Iteration 2860, lr = 0.01
+I0222 03:11:04.544493  4135 solver.cpp:189] Iteration 2880, loss = 0.594922
+I0222 03:11:04.544539  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.419833 (* 0.5 = 0.209916 loss)
+I0222 03:11:04.544550  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.770012 (* 0.5 = 0.385006 loss)
+I0222 03:11:04.544559  4135 solver.cpp:464] Iteration 2880, lr = 0.01
+I0222 03:11:10.128574  4135 solver.cpp:189] Iteration 2900, loss = 0.558494
+I0222 03:11:10.128626  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.52003 (* 0.5 = 0.260015 loss)
+I0222 03:11:10.128643  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.596958 (* 0.5 = 0.298479 loss)
+I0222 03:11:10.128656  4135 solver.cpp:464] Iteration 2900, lr = 0.01
+I0222 03:11:16.082324  4135 solver.cpp:189] Iteration 2920, loss = 0.609998
+I0222 03:11:16.082375  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.462716 (* 0.5 = 0.231358 loss)
+I0222 03:11:16.082391  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.757281 (* 0.5 = 0.37864 loss)
+I0222 03:11:16.082404  4135 solver.cpp:464] Iteration 2920, lr = 0.01
+I0222 03:11:22.216061  4135 solver.cpp:189] Iteration 2940, loss = 0.480975
+I0222 03:11:22.216117  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.382424 (* 0.5 = 0.191212 loss)
+I0222 03:11:22.216128  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.579527 (* 0.5 = 0.289763 loss)
+I0222 03:11:22.216137  4135 solver.cpp:464] Iteration 2940, lr = 0.01
+I0222 03:11:28.004222  4135 solver.cpp:189] Iteration 2960, loss = 0.603009
+I0222 03:11:28.004271  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.470216 (* 0.5 = 0.235108 loss)
+I0222 03:11:28.004287  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.735802 (* 0.5 = 0.367901 loss)
+I0222 03:11:28.004299  4135 solver.cpp:464] Iteration 2960, lr = 0.01
+I0222 03:11:33.667642  4135 solver.cpp:189] Iteration 2980, loss = 0.499539
+I0222 03:11:33.667690  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.292123 (* 0.5 = 0.146061 loss)
+I0222 03:11:33.667701  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.706955 (* 0.5 = 0.353477 loss)
+I0222 03:11:33.667711  4135 solver.cpp:464] Iteration 2980, lr = 0.01
+speed: 0.314s / iter
+I0222 03:11:39.606559  4135 solver.cpp:189] Iteration 3000, loss = 0.638172
+I0222 03:11:39.606603  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.524402 (* 0.5 = 0.262201 loss)
+I0222 03:11:39.606616  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.751941 (* 0.5 = 0.37597 loss)
+I0222 03:11:39.606624  4135 solver.cpp:464] Iteration 3000, lr = 0.01
+I0222 03:11:45.113167  4135 solver.cpp:189] Iteration 3020, loss = 0.574627
+I0222 03:11:45.113211  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.447574 (* 0.5 = 0.223787 loss)
+I0222 03:11:45.113221  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.701679 (* 0.5 = 0.35084 loss)
+I0222 03:11:45.113231  4135 solver.cpp:464] Iteration 3020, lr = 0.01
+I0222 03:11:50.823333  4135 solver.cpp:189] Iteration 3040, loss = 0.557239
+I0222 03:11:50.823376  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.355482 (* 0.5 = 0.177741 loss)
+I0222 03:11:50.823387  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.758995 (* 0.5 = 0.379498 loss)
+I0222 03:11:50.823397  4135 solver.cpp:464] Iteration 3040, lr = 0.01
+I0222 03:11:56.463444  4135 solver.cpp:189] Iteration 3060, loss = 0.443902
+I0222 03:11:56.463491  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.237285 (* 0.5 = 0.118642 loss)
+I0222 03:11:56.463501  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.650519 (* 0.5 = 0.32526 loss)
+I0222 03:11:56.463511  4135 solver.cpp:464] Iteration 3060, lr = 0.01
+I0222 03:12:02.095109  4135 solver.cpp:189] Iteration 3080, loss = 0.597984
+I0222 03:12:02.095157  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.32346 (* 0.5 = 0.16173 loss)
+I0222 03:12:02.095170  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.872507 (* 0.5 = 0.436254 loss)
+I0222 03:12:02.095178  4135 solver.cpp:464] Iteration 3080, lr = 0.01
+I0222 03:12:07.720477  4135 solver.cpp:189] Iteration 3100, loss = 0.760538
+I0222 03:12:07.720525  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.354556 (* 0.5 = 0.177278 loss)
+I0222 03:12:07.720537  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 1.16652 (* 0.5 = 0.58326 loss)
+I0222 03:12:07.720546  4135 solver.cpp:464] Iteration 3100, lr = 0.01
+I0222 03:12:13.479657  4135 solver.cpp:189] Iteration 3120, loss = 0.569539
+I0222 03:12:13.479706  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.355541 (* 0.5 = 0.17777 loss)
+I0222 03:12:13.479720  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.783537 (* 0.5 = 0.391768 loss)
+I0222 03:12:13.479732  4135 solver.cpp:464] Iteration 3120, lr = 0.01
+I0222 03:12:19.194190  4135 solver.cpp:189] Iteration 3140, loss = 0.591329
+I0222 03:12:19.194234  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.359824 (* 0.5 = 0.179912 loss)
+I0222 03:12:19.194249  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.822834 (* 0.5 = 0.411417 loss)
+I0222 03:12:19.194259  4135 solver.cpp:464] Iteration 3140, lr = 0.01
+I0222 03:12:25.069061  4135 solver.cpp:189] Iteration 3160, loss = 0.556712
+I0222 03:12:25.069120  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.403122 (* 0.5 = 0.201561 loss)
+I0222 03:12:25.069131  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.710302 (* 0.5 = 0.355151 loss)
+I0222 03:12:25.069142  4135 solver.cpp:464] Iteration 3160, lr = 0.01
+I0222 03:12:30.762519  4135 solver.cpp:189] Iteration 3180, loss = 0.53812
+I0222 03:12:30.762563  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.412074 (* 0.5 = 0.206037 loss)
+I0222 03:12:30.762574  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.664166 (* 0.5 = 0.332083 loss)
+I0222 03:12:30.762583  4135 solver.cpp:464] Iteration 3180, lr = 0.01
+speed: 0.312s / iter
+I0222 03:12:36.479945  4135 solver.cpp:189] Iteration 3200, loss = 0.3669
+I0222 03:12:36.479995  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.270974 (* 0.5 = 0.135487 loss)
+I0222 03:12:36.480005  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.462826 (* 0.5 = 0.231413 loss)
+I0222 03:12:36.480015  4135 solver.cpp:464] Iteration 3200, lr = 0.01
+I0222 03:12:42.632031  4135 solver.cpp:189] Iteration 3220, loss = 0.331155
+I0222 03:12:42.632081  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.120283 (* 0.5 = 0.0601413 loss)
+I0222 03:12:42.632092  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.542028 (* 0.5 = 0.271014 loss)
+I0222 03:12:42.632102  4135 solver.cpp:464] Iteration 3220, lr = 0.01
+I0222 03:12:48.323007  4135 solver.cpp:189] Iteration 3240, loss = 0.540322
+I0222 03:12:48.323063  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.395338 (* 0.5 = 0.197669 loss)
+I0222 03:12:48.323081  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.685307 (* 0.5 = 0.342653 loss)
+I0222 03:12:48.323092  4135 solver.cpp:464] Iteration 3240, lr = 0.01
+I0222 03:12:54.502182  4135 solver.cpp:189] Iteration 3260, loss = 0.526528
+I0222 03:12:54.502228  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.434793 (* 0.5 = 0.217397 loss)
+I0222 03:12:54.502239  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.618262 (* 0.5 = 0.309131 loss)
+I0222 03:12:54.502249  4135 solver.cpp:464] Iteration 3260, lr = 0.01
+I0222 03:13:00.389529  4135 solver.cpp:189] Iteration 3280, loss = 0.658634
+I0222 03:13:00.389576  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.390534 (* 0.5 = 0.195267 loss)
+I0222 03:13:00.389591  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.926735 (* 0.5 = 0.463367 loss)
+I0222 03:13:00.389605  4135 solver.cpp:464] Iteration 3280, lr = 0.01
+I0222 03:13:06.108063  4135 solver.cpp:189] Iteration 3300, loss = 0.612671
+I0222 03:13:06.108110  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.399628 (* 0.5 = 0.199814 loss)
+I0222 03:13:06.108126  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.825715 (* 0.5 = 0.412857 loss)
+I0222 03:13:06.108137  4135 solver.cpp:464] Iteration 3300, lr = 0.01
+I0222 03:13:11.619160  4135 solver.cpp:189] Iteration 3320, loss = 0.554072
+I0222 03:13:11.619209  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.380259 (* 0.5 = 0.19013 loss)
+I0222 03:13:11.619220  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.727885 (* 0.5 = 0.363942 loss)
+I0222 03:13:11.619233  4135 solver.cpp:464] Iteration 3320, lr = 0.01
+I0222 03:13:17.153256  4135 solver.cpp:189] Iteration 3340, loss = 0.468551
+I0222 03:13:17.153303  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.447566 (* 0.5 = 0.223783 loss)
+I0222 03:13:17.153316  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.489536 (* 0.5 = 0.244768 loss)
+I0222 03:13:17.153324  4135 solver.cpp:464] Iteration 3340, lr = 0.01
+I0222 03:13:22.811153  4135 solver.cpp:189] Iteration 3360, loss = 0.524229
+I0222 03:13:22.811198  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.273495 (* 0.5 = 0.136748 loss)
+I0222 03:13:22.811209  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.774963 (* 0.5 = 0.387482 loss)
+I0222 03:13:22.811218  4135 solver.cpp:464] Iteration 3360, lr = 0.01
+I0222 03:13:28.421442  4135 solver.cpp:189] Iteration 3380, loss = 0.294291
+I0222 03:13:28.421486  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.239274 (* 0.5 = 0.119637 loss)
+I0222 03:13:28.421497  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.349308 (* 0.5 = 0.174654 loss)
+I0222 03:13:28.421506  4135 solver.cpp:464] Iteration 3380, lr = 0.01
+speed: 0.311s / iter
+I0222 03:13:33.848516  4135 solver.cpp:189] Iteration 3400, loss = 0.44789
+I0222 03:13:33.848569  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.30013 (* 0.5 = 0.150065 loss)
+I0222 03:13:33.848580  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.595649 (* 0.5 = 0.297824 loss)
+I0222 03:13:33.848590  4135 solver.cpp:464] Iteration 3400, lr = 0.01
+I0222 03:13:39.361685  4135 solver.cpp:189] Iteration 3420, loss = 0.540311
+I0222 03:13:39.361729  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.446416 (* 0.5 = 0.223208 loss)
+I0222 03:13:39.361740  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.634205 (* 0.5 = 0.317103 loss)
+I0222 03:13:39.361749  4135 solver.cpp:464] Iteration 3420, lr = 0.01
+I0222 03:13:45.155179  4135 solver.cpp:189] Iteration 3440, loss = 0.54613
+I0222 03:13:45.155223  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.389176 (* 0.5 = 0.194588 loss)
+I0222 03:13:45.155235  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.703085 (* 0.5 = 0.351543 loss)
+I0222 03:13:45.155244  4135 solver.cpp:464] Iteration 3440, lr = 0.01
+I0222 03:13:51.186002  4135 solver.cpp:189] Iteration 3460, loss = 0.496495
+I0222 03:13:51.186054  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.339966 (* 0.5 = 0.169983 loss)
+I0222 03:13:51.186067  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.653024 (* 0.5 = 0.326512 loss)
+I0222 03:13:51.186077  4135 solver.cpp:464] Iteration 3460, lr = 0.01
+I0222 03:13:56.929581  4135 solver.cpp:189] Iteration 3480, loss = 0.510346
+I0222 03:13:56.929630  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.347046 (* 0.5 = 0.173523 loss)
+I0222 03:13:56.929642  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.673645 (* 0.5 = 0.336823 loss)
+I0222 03:13:56.929651  4135 solver.cpp:464] Iteration 3480, lr = 0.01
+I0222 03:14:02.553105  4135 solver.cpp:189] Iteration 3500, loss = 0.522862
+I0222 03:14:02.553154  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.307637 (* 0.5 = 0.153818 loss)
+I0222 03:14:02.553165  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.738087 (* 0.5 = 0.369044 loss)
+I0222 03:14:02.553174  4135 solver.cpp:464] Iteration 3500, lr = 0.01
+I0222 03:14:08.339730  4135 solver.cpp:189] Iteration 3520, loss = 0.554359
+I0222 03:14:08.339777  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.363692 (* 0.5 = 0.181846 loss)
+I0222 03:14:08.339789  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.745027 (* 0.5 = 0.372514 loss)
+I0222 03:14:08.339799  4135 solver.cpp:464] Iteration 3520, lr = 0.01
+I0222 03:14:14.307785  4135 solver.cpp:189] Iteration 3540, loss = 0.66827
+I0222 03:14:14.307837  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.382855 (* 0.5 = 0.191428 loss)
+I0222 03:14:14.307847  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.953685 (* 0.5 = 0.476842 loss)
+I0222 03:14:14.307857  4135 solver.cpp:464] Iteration 3540, lr = 0.01
+I0222 03:14:20.481698  4135 solver.cpp:189] Iteration 3560, loss = 0.451668
+I0222 03:14:20.481748  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.260367 (* 0.5 = 0.130184 loss)
+I0222 03:14:20.481760  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.642968 (* 0.5 = 0.321484 loss)
+I0222 03:14:20.481770  4135 solver.cpp:464] Iteration 3560, lr = 0.01
+I0222 03:14:25.881561  4135 solver.cpp:189] Iteration 3580, loss = 0.531121
+I0222 03:14:25.881615  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.469742 (* 0.5 = 0.234871 loss)
+I0222 03:14:25.881626  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.592501 (* 0.5 = 0.29625 loss)
+I0222 03:14:25.881636  4135 solver.cpp:464] Iteration 3580, lr = 0.01
+speed: 0.309s / iter
+I0222 03:14:31.368957  4135 solver.cpp:189] Iteration 3600, loss = 0.498043
+I0222 03:14:31.369001  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.355346 (* 0.5 = 0.177673 loss)
+I0222 03:14:31.369016  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.64074 (* 0.5 = 0.32037 loss)
+I0222 03:14:31.369025  4135 solver.cpp:464] Iteration 3600, lr = 0.01
+I0222 03:14:37.020454  4135 solver.cpp:189] Iteration 3620, loss = 0.442617
+I0222 03:14:37.020500  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.313507 (* 0.5 = 0.156753 loss)
+I0222 03:14:37.020511  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.571727 (* 0.5 = 0.285863 loss)
+I0222 03:14:37.020520  4135 solver.cpp:464] Iteration 3620, lr = 0.01
+I0222 03:14:42.714087  4135 solver.cpp:189] Iteration 3640, loss = 0.57725
+I0222 03:14:42.714138  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.284361 (* 0.5 = 0.142181 loss)
+I0222 03:14:42.714154  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.870139 (* 0.5 = 0.435069 loss)
+I0222 03:14:42.714167  4135 solver.cpp:464] Iteration 3640, lr = 0.01
+I0222 03:14:48.312103  4135 solver.cpp:189] Iteration 3660, loss = 0.555284
+I0222 03:14:48.312157  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.417319 (* 0.5 = 0.20866 loss)
+I0222 03:14:48.312175  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.693249 (* 0.5 = 0.346624 loss)
+I0222 03:14:48.312186  4135 solver.cpp:464] Iteration 3660, lr = 0.01
+I0222 03:14:54.030323  4135 solver.cpp:189] Iteration 3680, loss = 0.438311
+I0222 03:14:54.030370  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.319966 (* 0.5 = 0.159983 loss)
+I0222 03:14:54.030385  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.556655 (* 0.5 = 0.278328 loss)
+I0222 03:14:54.030400  4135 solver.cpp:464] Iteration 3680, lr = 0.01
+I0222 03:14:59.595532  4135 solver.cpp:189] Iteration 3700, loss = 0.496071
+I0222 03:14:59.595592  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.409254 (* 0.5 = 0.204627 loss)
+I0222 03:14:59.595607  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.582888 (* 0.5 = 0.291444 loss)
+I0222 03:14:59.595620  4135 solver.cpp:464] Iteration 3700, lr = 0.01
+I0222 03:15:05.078989  4135 solver.cpp:189] Iteration 3720, loss = 0.60052
+I0222 03:15:05.079044  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.402852 (* 0.5 = 0.201426 loss)
+I0222 03:15:05.079061  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.798187 (* 0.5 = 0.399093 loss)
+I0222 03:15:05.079074  4135 solver.cpp:464] Iteration 3720, lr = 0.01
+I0222 03:15:10.456645  4135 solver.cpp:189] Iteration 3740, loss = 0.471738
+I0222 03:15:10.456696  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.34559 (* 0.5 = 0.172795 loss)
+I0222 03:15:10.456712  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.597885 (* 0.5 = 0.298943 loss)
+I0222 03:15:10.456727  4135 solver.cpp:464] Iteration 3740, lr = 0.01
+I0222 03:15:16.116683  4135 solver.cpp:189] Iteration 3760, loss = 0.495009
+I0222 03:15:16.116735  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.381442 (* 0.5 = 0.190721 loss)
+I0222 03:15:16.116751  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.608576 (* 0.5 = 0.304288 loss)
+I0222 03:15:16.116763  4135 solver.cpp:464] Iteration 3760, lr = 0.01
+I0222 03:15:21.878330  4135 solver.cpp:189] Iteration 3780, loss = 0.263165
+I0222 03:15:21.878381  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.255565 (* 0.5 = 0.127782 loss)
+I0222 03:15:21.878396  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.270765 (* 0.5 = 0.135382 loss)
+I0222 03:15:21.878408  4135 solver.cpp:464] Iteration 3780, lr = 0.01
+speed: 0.308s / iter
+I0222 03:15:27.503566  4135 solver.cpp:189] Iteration 3800, loss = 0.558071
+I0222 03:15:27.503621  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.350339 (* 0.5 = 0.175169 loss)
+I0222 03:15:27.503638  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.765804 (* 0.5 = 0.382902 loss)
+I0222 03:15:27.503651  4135 solver.cpp:464] Iteration 3800, lr = 0.01
+I0222 03:15:33.273306  4135 solver.cpp:189] Iteration 3820, loss = 0.546014
+I0222 03:15:33.273365  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.302576 (* 0.5 = 0.151288 loss)
+I0222 03:15:33.273380  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.789453 (* 0.5 = 0.394726 loss)
+I0222 03:15:33.273393  4135 solver.cpp:464] Iteration 3820, lr = 0.01
+I0222 03:15:38.759279  4135 solver.cpp:189] Iteration 3840, loss = 0.417853
+I0222 03:15:38.759337  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.301819 (* 0.5 = 0.150909 loss)
+I0222 03:15:38.759353  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.533888 (* 0.5 = 0.266944 loss)
+I0222 03:15:38.759367  4135 solver.cpp:464] Iteration 3840, lr = 0.01
+I0222 03:15:44.206270  4135 solver.cpp:189] Iteration 3860, loss = 0.560594
+I0222 03:15:44.206318  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.408343 (* 0.5 = 0.204172 loss)
+I0222 03:15:44.206334  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.712845 (* 0.5 = 0.356423 loss)
+I0222 03:15:44.206347  4135 solver.cpp:464] Iteration 3860, lr = 0.01
+I0222 03:15:50.143168  4135 solver.cpp:189] Iteration 3880, loss = 0.628204
+I0222 03:15:50.143219  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.461298 (* 0.5 = 0.230649 loss)
+I0222 03:15:50.143234  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.79511 (* 0.5 = 0.397555 loss)
+I0222 03:15:50.143254  4135 solver.cpp:464] Iteration 3880, lr = 0.01
+I0222 03:15:56.429353  4135 solver.cpp:189] Iteration 3900, loss = 0.582064
+I0222 03:15:56.429404  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.360813 (* 0.5 = 0.180407 loss)
+I0222 03:15:56.429420  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.803315 (* 0.5 = 0.401657 loss)
+I0222 03:15:56.429433  4135 solver.cpp:464] Iteration 3900, lr = 0.01
+I0222 03:16:02.002482  4135 solver.cpp:189] Iteration 3920, loss = 0.423498
+I0222 03:16:02.002532  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.316284 (* 0.5 = 0.158142 loss)
+I0222 03:16:02.002547  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.530711 (* 0.5 = 0.265355 loss)
+I0222 03:16:02.002559  4135 solver.cpp:464] Iteration 3920, lr = 0.01
+I0222 03:16:07.248168  4135 solver.cpp:189] Iteration 3940, loss = 0.435167
+I0222 03:16:07.248222  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.360105 (* 0.5 = 0.180052 loss)
+I0222 03:16:07.248237  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.51023 (* 0.5 = 0.255115 loss)
+I0222 03:16:07.248260  4135 solver.cpp:464] Iteration 3940, lr = 0.01
+I0222 03:16:13.093597  4135 solver.cpp:189] Iteration 3960, loss = 0.546063
+I0222 03:16:13.093648  4135 solver.cpp:204]     Train net output #0: da_loss_bbox = 0.598255 (* 0.5 = 0.299128 loss)
+I0222 03:16:13.093663  4135 solver.cpp:204]     Train net output #1: da_loss_cls = 0.493871 (* 0.5 = 0.246935 loss)
+I0222 03:16:13.093677  4135 solver.cpp:464] Iteration 3960, lr = 0.01
